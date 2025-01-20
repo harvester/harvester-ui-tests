@@ -18,8 +18,10 @@ Follow these steps to set up your environment:
 npm ci
 
 # Configure environment variables
-mv cypress.env.json.example cypress.env.json
-vim cypress.env.json  # Update the relevant variables accordingly
+cp cypress.env.json.example cypress.env.json
+
+# Update the relevant variables accordingly
+vim cypress.env.json 
 ```
 
 ### Development
