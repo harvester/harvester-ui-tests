@@ -258,8 +258,7 @@ The Docker image automatically runs Cypress tests and uploads the results to the
 
 ### Access Test Results
 
-1. View results [here](https://minio.provo.rancherlabs.com:31524/cypress-test-report/index.html).
-2. Use the following command to list reporters:
+1. Use the following command to list reporters:
 
 ```bash
 ./scripts/list-reporters
