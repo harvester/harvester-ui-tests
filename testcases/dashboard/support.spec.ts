@@ -55,11 +55,9 @@ describe("Support Page", () => {
         .get(".banner.error")
         .should("be.visible")
 
-      // to verify the view disappeared.
+      // to verify the modal disappeared.
       cy.get("@closeBtn").click()
-      cy.get("@generateView")
-        .children()
-        .should($el => expect($el).to.have.length(0))
+      cy.get("@generateView").should('not.exist')
     })
 
     it('should download successfully', () => {
@@ -77,17 +75,19 @@ describe("Support Page", () => {
       cy.window().then(win => {
         const timeout = {timeout: constants.timeout.downloadTimeout}
         cy.log(`Wait for ${timeout.timeout} ms to generate and download support bundle`)
-        return cy.get("@generateView").then(timeout, ($el) => {
+
+        return cy.get("#__layout").then(timeout, ($el) => {
           return new Promise((resolve, reject) => {
             const modalObserver = new MutationObserver((mutationList) => {
               if(mutationList.length && mutationList[0]?.type === "childList") {
-                  // page needs to reload after downloaded support bundle, delay 3s to refresh page
-                  setTimeout(() => resolve(win.history.go(0)), 3000)
+                cy.log('Wait for 5s to reload the page.')
+                // page needs to reload after downloaded support bundle, delay 5s to refresh page
+                setTimeout(() => resolve(win.history.go(0)), 5000)
               }else{
-                reject('Error: monitoring generate modal closed, no childList mutation found');
+                reject('Error: monitoring generate support modal closed, no childList mutation found');
               }
             });
-            modalObserver.observe($el[0], { childList: true, characterData: true });
+            modalObserver.observe($el[0], { childList: true });
           })
         })
       })
@@ -96,10 +96,18 @@ describe("Support Page", () => {
           if(filename === undefined) {
             reject('filename is undefined')
           }
-          const supportBundle = {path: Cypress.config("downloadsFolder"), fileName: "supportbundle"}
+
+          const supportBundle = {path: Cypress.config("downloadsFolder"), fileName: "supportbundle"}         
           // resolve real bundle filename
           cy.task("findFiles", supportBundle)
-            .then((files: any) => files.length === 1 ? resolve(files[0]) : reject(files))
+            .then((files: any) => {
+              if(files.length === 1){
+                cy.log('Found support bundle:', files[0])
+                resolve(files[0]) 
+              }else{
+                reject(`Error: support bundle not found, files=${files}`)
+              }
+            })
         })
         .then(filename => {
           cy.log("Downloaded SupportBundle: ", filename)
