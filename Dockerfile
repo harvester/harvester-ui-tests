@@ -6,14 +6,14 @@ RUN apt-get install -y git
 ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc
 RUN chmod +x /usr/local/bin/mc
 
-RUN git clone https://github.com/harvester/tests.git
+RUN git clone https://github.com/harvester/harvester-ui-tests.git
 
-WORKDIR /tests/cypress
+WORKDIR /harvester-ui-tests
 
-COPY . /tests/cypress
+COPY . /harvester-ui-tests
 
 RUN npm install
 
-ENV PATH /tests/cypress/node_modules/.bin:$PATH
+ENV PATH /harvester-ui-tests/node_modules/.bin:$PATH
 
 CMD ["./scripts/e2e"]
