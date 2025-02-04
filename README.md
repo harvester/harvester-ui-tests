@@ -56,12 +56,12 @@ npx cypress run --reporter mochawesome --spec "./testcases/dashboard/*.spec.ts"
 1.Generate merged report from json files
 
 ```
-$ npx mochawesome-merge cypress/results/*.json > merge-report.json
+$ npx mochawesome-merge results/*.json > merge-report.json
 
 $ npx mochawesome-merge ./*.json > merge-report.json
 
 # Generate merged json report
-../tests/cypress/merge-report.json
+  /results/merge-report.json
 ```
 
 2. Generate the mochaawesome report in html format
@@ -70,7 +70,7 @@ $ npx mochawesome-report-generator merge-report.json
 
 ```
 
-3. Then we can find the generated HTML report under `/tests/cypress/mochawesome-report/merge-report.html` 
+3. Then we can find the generated HTML report under `/results/mochawesome-report/merge-report.html` 
 
 
 ---
@@ -102,11 +102,11 @@ export function loginTest() {}
 ### Creating Test Skeletons for New Features or Tickets
 
 Frontend Tests
-Further info placed in `cypress/README.md`.
+Further info placed in `./README.md`.
 
-There is a test skeleton spec to use as a template in `tests/cypress/skel/`.
+There is a test skeleton spec to use as a template in `./skel/`.
 
-- If you are adding a test to an existing suite like `tests/integration/login.spec.ts`, you can use the template JSDoc and function call, then add the test steps.
+- If you are adding a test to an existing suite like `./login.spec.ts`, you can use the template JSDoc and function call, then add the test steps.
 - If you are creating a new logical group of tests, copy the `skel.spec.ts` file into `integration` or a subdirectory where it fits better, and rename it appropriately.
 - Add the `@notImplemented` tag to the test case if it hasn't been implemented yet. This will have it shown with that tag on the static site.
 
@@ -256,7 +256,7 @@ metadata:
 The Docker image automatically runs Cypress tests and uploads the results to the MinIO server.
 
 - **Default bucket name**: `cypress-test-report`
-- **Default directory path**: `cypress/results/`
+- **Default directory path**: `./results/`
 
 ### Access Test Results
 
