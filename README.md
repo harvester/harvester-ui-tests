@@ -56,9 +56,7 @@ npx cypress run --reporter mochawesome --spec "./testcases/dashboard/*.spec.ts"
 1.Generate merged report from json files
 
 ```
-$ npx mochawesome-merge results/*.json > merge-report.json
-
-$ npx mochawesome-merge ./*.json > merge-report.json
+$ npx mochawesome-merge results/*.json > results/merge-report.json
 
 # Generate merged json report
   /results/merge-report.json
@@ -66,11 +64,11 @@ $ npx mochawesome-merge ./*.json > merge-report.json
 
 2. Generate the mochaawesome report in html format
 ```
-$ npx mochawesome-report-generator merge-report.json
+$ npx mochawesome-report-generator results/merge-report.json
 
 ```
 
-3. Then we can find the generated HTML report under `/results/mochawesome-report/merge-report.html` 
+3. Then we can find the generated HTML report under `/mochawesome-report/merge-report.html` 
 
 
 ---
