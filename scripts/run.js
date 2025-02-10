@@ -15,6 +15,6 @@ cypress.run().then(
 
 function generateReport(options) {
   return merge({
-    files: ['./cypress/results/*.json']
+    files: ['./results/*.json']
   }).then(report => marge.create(report, options))
 }
