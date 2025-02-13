@@ -12,8 +12,8 @@ export default defineConfig({
   fixturesFolder: './fixtures',
   numTestsKeptInMemory: 1,
   chromeWebSecurity: false,
-  screenshotsFolder: 'cypress/results/mochawesome-report/assets',
-  downloadsFolder: 'cypress/downloads',
+  screenshotsFolder: 'results/mochawesome-report/assets',
+  downloadsFolder: 'downloads',
   env: {
     NODE_ENV: 'production',
     username: 'admin',
@@ -55,7 +55,7 @@ export default defineConfig({
   },
   reporter: 'mochawesome',
   reporterOptions: {
-    reportDir: 'cypress/results',
+    reportDir: 'results',
     overwrite: false,
     html: false,
     json: true,

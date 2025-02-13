@@ -1,5 +1,5 @@
 #!/bin/bash
-minio_dir="cypress-test-report/cypress/results/"
+minio_dir="cypress-test-report/results/"
 minio_name="minio"
 
 files=$(mc ls ${minio_name}/${minio_dir} --insecure)
