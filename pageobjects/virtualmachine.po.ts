@@ -101,7 +101,7 @@ export class VmsPage extends CruResourcePo {
   selectSchedulingType({ type = 'any' }: { type: string }) {
     const map: any = {
       any: 'Run virtual machine on any available node',
-      specific: 'Run virtual machine on specific node - (Live migration is not supported))',
+      specific: 'Run virtual machine on specific node - (Live migration is not supported)',
       rules: 'Run virtual machine on node(s) matching scheduling rules'
     }
 
