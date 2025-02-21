@@ -321,7 +321,7 @@ describe('Create a ISO image via upload', () => {
 
         image.goToCreate();
         image.setNameNsDescription(IMAGE_NAME, namespace);
-        image.setBasics({ path: 'cypress/fixtures/cirros-0.5.2-aarch64-disk.img' });
+        image.setBasics({ path: 'fixtures/cirros-0.5.2-aarch64-disk.img' });
 
         cy.wrap(image.save({ upload: true })).then((realName) => {
             image.checkState({ name: IMAGE_NAME });
