@@ -41,6 +41,11 @@ export class VolumePage extends CruResourcePo {
     return new LabeledSelectPo(".labeled-select", `:contains("Image"):last`);
   }
 
+  checkVolumeNameExist(volumeName: string,  namespace: string = 'default') {
+    this.goToList();
+    this.censorInColumn(volumeName, 3, namespace, 4, volumeName, 3);
+  }
+
   checkState(name: string, state: string = 'Ready', namespace: string = 'default') {
     this.goToList();
     this.censorInColumn(name, 3, namespace, 4, state, 2);
