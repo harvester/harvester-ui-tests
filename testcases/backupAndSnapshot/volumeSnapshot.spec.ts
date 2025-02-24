@@ -43,7 +43,7 @@ describe('Validation volume snapshot', () => {
     createVolumeSnapshotSuccess = true
   })
 
-  it('Restore New volume from volume snapshot', () => {
+  it('Restore new volume from volume snapshot', () => {
     onlyOn(createVolumeSnapshotSuccess);
     
     const newName = 'create-new-from-snapshot';
@@ -53,8 +53,8 @@ describe('Validation volume snapshot', () => {
     volumeSnapshots.goToList();
     volumeSnapshots.restoreNew(volumeSnapshotName, newName);
 
-    // check volume
-    volumes.checkState(newName);
+    // check restore volume exists
+    volumes.checkVolumeNameExist(newName);
 
     // delete volume
     volumes.deleteFromStore(`default/${newName}`);
