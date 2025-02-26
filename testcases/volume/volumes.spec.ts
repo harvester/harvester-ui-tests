@@ -283,8 +283,8 @@ describe("Edit volume increase size via form", () => {
       volumes.setBasics({ size: '15' });
       volumes.update(`${namespace}/${volumeName}`);
 
-      // check VOLUME state
-      volumes.censorInColumn(volumeName, 3, namespace, 4, 'In-use', 2);
+      // check VOLUME size change to 15 Gi
+      volumes.censorInColumn(volumeName, 3, namespace, 4, '15 Gi', 5);
 
       // delete VM
       vms.delete(namespace, VM_NAME);
