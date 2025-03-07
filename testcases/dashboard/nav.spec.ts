@@ -9,7 +9,7 @@ describe("UI url", () => {
   })
 
   // https://harvester.github.io/tests/manual/ui/verify-url/
-  it("Verify the Harvester UI UR (all)", () => {
+  it("Verify the Harvester UI pages (all)", () => {
     Object.values(MenuNav).forEach((nav) => {
       // @ts-ignore
       navBar.clickMenuNav(...nav);
