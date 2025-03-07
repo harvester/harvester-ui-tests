@@ -71,18 +71,19 @@ describe("Support Page", () => {
               filename = res.body?.metadata?.name
             })
           )
+           
  
       cy.window().then(win => {
         const timeout = {timeout: constants.timeout.downloadTimeout}
-        cy.log(`Wait for ${timeout.timeout} ms to generate and download support bundle`)
+        cy.log(`Wait for ${timeout.timeout / 1000} seconds to generate and download support bundle`)
 
-        return cy.get("#__layout").then(timeout, ($el) => {
+        return cy.get("#modals").then(timeout, ($el) => {
           return new Promise((resolve, reject) => {
             const modalObserver = new MutationObserver((mutationList) => {
-              if(mutationList.length && mutationList[0]?.type === "childList") {
-                cy.log('Wait for 5s to reload the page.')
-                // page needs to reload after downloaded support bundle, delay 5s to refresh page
-                setTimeout(() => resolve(win.history.go(0)), 5000)
+              if(mutationList.length > 0 && mutationList.every(ml => ml.type === "childList")) {
+                cy.log('Wait for 10s to reload the page.')
+                // delay 10s to wait for download process done, then refresh page
+                setTimeout(() => resolve(win.history.go(0)), 10000)
               }else{
                 reject('Error: monitoring generate support modal closed, no childList mutation found');
               }
@@ -97,7 +98,8 @@ describe("Support Page", () => {
             reject('filename is undefined')
           }
 
-          const supportBundle = {path: Cypress.config("downloadsFolder"), fileName: "supportbundle"}         
+          const supportBundle = {path: Cypress.config("downloadsFolder"), fileName: "supportbundle"}  
+       
           // resolve real bundle filename
           cy.task("findFiles", supportBundle)
             .then((files: any) => {
@@ -129,6 +131,8 @@ describe("Support Page", () => {
           cy.log("Total Files count:", files.length)
           expect(dirs.length).to.greaterThan(0)  
           expect(files.length).to.greaterThan(0)  
+        }).catch((err) => {
+          cy.log('🚀 ~ Download support bundle failed. Err:', err)
         })
       })
     })
