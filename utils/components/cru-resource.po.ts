@@ -258,7 +258,7 @@ export default class CruResourcePo extends PagePo {
   }
 
   public goToList() {
-    cy.intercept('GET', `/v1/harvester/${this.realType}s`).as('goToList');
+    cy.intercept('GET', `/v1/harvester/${this.realType}s*`).as('goToList');
     cy.visit(`/harvester/c/local/${this.type}`)
     cy.wait('@goToList');
   }

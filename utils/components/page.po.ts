@@ -128,7 +128,7 @@ export class Navbar {
 
 class Header {
   public static get userBtn(): CypressChainable {
-    return cy.get("header .user-menu")
+    return cy.get('header [data-testid="nav_header_showUserMenu"]')
   }
 
   public static get nameSpaceBtn(): CypressChainable {
@@ -136,7 +136,7 @@ class Header {
   }
 
   public static logout() {
-    Header.userBtn.click().get(".user-menu-item").contains("Log Out").click()
+    Header.userBtn.click().get('[role="menuitem"]').contains("Log Out").click()
   }
 
   public static findNamespace(ns: string) {

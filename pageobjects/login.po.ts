@@ -10,7 +10,6 @@ export class LoginPage {
     private submitButton = '[data-testid="setup-submit"]';
     private loginButton = '[data-testid="login-submit"]';
     private checkboxEula = '[data-testid="setup-agreement"]'
-    private checkboxTelemetry = '[for="checkbox-telemetry"]';
     private allRadios = '.radio-container';
     private checkbox = '.checkbox-custom';
     private mainPageHeader = 'main .outlet header h1 span';
@@ -35,7 +34,7 @@ export class LoginPage {
     */
     public static isFirstTimeLogin(): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            cy.intercept('GET', '/v1/management.cattle.io.setting').as('getFirstLogin')
+            cy.intercept('GET', '/v1/management.cattle.io.setting*').as('getFirstLogin')
               .visit("/")
               .wait('@getFirstLogin').then(login => {
                 const data: any[] = login.response?.body.data;
@@ -96,23 +95,17 @@ export class LoginPage {
         return this
     }
 
+    // given checked = true to check the checkbox, false to uncheck the checkbox
     public checkEula(checked:boolean = true) {
         cy.get(`${this.checkboxEula} ${this.checkbox}`).then($el => {
-            if(!!$el.attr("aria-checked") === checked) {
-                cy.get(this.checkboxEula);
-            } else {
-                cy.get(this.checkboxEula).click("left");
-            }
-        })
-        return this
-    }
+            const isChecked =  $el.attr("aria-checked") === 'true';
 
-    public checkTelemetry(checked:boolean = true) {
-        cy.get(`${this.checkboxTelemetry} ${this.checkbox}`).then($el => {
-            if (!!$el.attr("aria-checked") === checked) {
-                cy.get(this.checkboxTelemetry);
-            } else {
-                cy.get(this.checkboxTelemetry).click("left");
+            if(isChecked && !checked) {
+                cy.log('uncheck eula checkbox')
+                cy.get(this.checkboxEula).click("left");;
+            } else if (!isChecked && checked) {
+                cy.log('check eula checkbox')
+                cy.get(this.checkboxEula).click("left");
             }
         })
         return this
@@ -145,7 +138,6 @@ export class LoginPage {
             const firstLogin = data.find(value => value?.id === 'first-login');
             if (firstLogin.value === 'true') {
                 cy.get(this.checkboxEula).click('left')
-                cy.get(this.checkboxTelemetry).click('left');
                 cy.get(this.allRadios)
                 .each(($elem, index) => {
                     if (index === 1) {

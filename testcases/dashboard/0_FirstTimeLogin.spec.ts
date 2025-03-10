@@ -19,20 +19,6 @@ describe("First Time Login Page", () => {
 
       page.checkEula(false);
       expect(page.submitBtn.should("be.disabled"));
-
-    });
-
-    it("is optional to accept collection of anonymous statstics", () => {
-      onlyOn(isFirstTimeLogin);
-      const page = new LoginPage();
-      page.visit();
-
-      page.checkTelemetry(true);
-      expect(page.submitBtn.should("be.disabled"));
-
-      page.checkTelemetry(false);
-      expect(page.submitBtn.should("be.disabled"));
-
     });
   });
 
@@ -70,7 +56,6 @@ describe("First Time Login Page", () => {
       const page = new LoginPage();
       page.visit()
           .selectSpecificPassword()
-          .checkTelemetry(false)
           .checkEula(true)
           .inputPassword()
           .submitBtn.click();
