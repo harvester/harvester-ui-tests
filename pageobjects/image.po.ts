@@ -58,14 +58,16 @@ export class ImagePage extends CruResourcePo {
       cy.get('.kv-item.key input').eq(-1).type(key);
       cy.get('.kv-item.value input').eq(-1).type(labels[key]);
     });
+    cy.wait(1000);
   }
 
   filterByLabels(labels: any = {}) {
     const keys = Object.keys(labels);
 
-    cy.get('body').click(0,0);
+    cy.get('body').click(500,0);
     cy.get('.fixed-header-actions').contains('Filter labels').click();
     cy.get('.filter-popup').contains('Clear All').click();
+
     keys.forEach((key, index) => {
       cy.get('.filter-popup').contains('Add').click();
       cy.get('.filter-popup .box').eq(index + 1).within(() => {
@@ -83,10 +85,10 @@ export class ImagePage extends CruResourcePo {
     
   }
 
-  checkState({ name = '', namespace = 'default', state = 'Active', progress = 'Completed', size = '16 MB' }: {name?:string, namespace?:string, state?:string, progress?:string,size?:string} = {}) {
-    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.uploadTimeout });
-    this.censorInColumn(name, 3, namespace, 4, progress, 5, { timeout: constants.timeout.uploadTimeout });
-    this.censorInColumn(name, 3, namespace, 4, size, 6, { timeout: constants.timeout.uploadTimeout });
+  checkState({ name = '', namespace = 'default', state = 'Active', progress = 'Completed', size = '16 Mi' }: {name?:string, namespace?:string, state?:string, progress?:string,size?:string} = {}) {
+    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, progress, 6, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, size, 7, { timeout: constants.timeout.downloadTimeout });
   }
 
   public exportImage(vmName: string, imageName: string, namespace: string) {
