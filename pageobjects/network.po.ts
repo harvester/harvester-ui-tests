@@ -41,7 +41,7 @@ export default class NetworkPage extends CruResourcePo {
   }
 
   vlan() {
-    return new LabeledInputPo('.labeled-input', `:contains("VLAN ID")`)
+    return new LabeledInputPo('.labeled-input', `:contains("Vlan ID")`)
   }
 
   clusterNetwork() {
