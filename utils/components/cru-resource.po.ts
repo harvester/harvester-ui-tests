@@ -29,7 +29,7 @@ export default class CruResourcePo extends PagePo {
   public footerButtons = '.cru-resource-footer'
   public confirmRemove = '.card-container.prompt-remove'
   public searchInput = '.search'
-  public actionMenu = '.list-unstyled.menu'
+  public actionMenu = '.dropdownTarget[role="menu"]'
   public actionMenuIcon = '.icon-actions'
   public actionButton = '[data-testid="masthead-create"]';
 
@@ -173,9 +173,8 @@ export default class CruResourcePo extends PagePo {
     this.description().input(value?.description)
   }
 
-  public update(id: string, type?: string) {
-    const _type = type || this.realType
-    cy.intercept('PUT', `/v1/harvester/${_type}s/${id}`).as('update');
+  public update(id: string, namespace: string) {
+    cy.intercept('PATCH', `apis/harvesterhci.io/v1beta1/namespaces/${namespace}/virtualmachineimages/${id}`).as('update');
     cy.get(this.footerButtons).contains('Save').click()
     cy.wait('@update').then(res => {
       expect(res.response?.statusCode, `Check edit ${id}`).to.equal(200);
@@ -184,7 +183,6 @@ export default class CruResourcePo extends PagePo {
 
   public hasAction({ name, nameIndex = 3, ns, nsIndex = 4, action, expect = true, nameSelector }: { name: string, nameIndex?: number, ns: string, nsIndex?: number, action: string, expect?: boolean, nameSelector?: string }) {
     this.search(name);
-    cy.wait(2000);
     cy.wrap('async').then(() => {
       this.table.find(name, nameIndex, ns, nsIndex, nameSelector).then((rowIndex: any) => {
         if (typeof rowIndex === 'number') {
@@ -199,9 +197,12 @@ export default class CruResourcePo extends PagePo {
 
   public clickAction(name: string, action: string) {
     this.search(name);
+    
     const record = cy.contains(name)
     expect(record.should('be.visible'))
-    record.parentsUntil('tbody', 'tr').find(this.actionMenuIcon).click()
+
+    record.parentsUntil('tbody', 'tr').find(this.actionMenuIcon).click();
+
     // VM stop/pause actions has to click apply in one more confirmation modal
     if(action?.toLowerCase() === 'stop' || action?.toLowerCase() === 'pause') {
       cy.get(this.actionMenu).contains(action).click()
@@ -236,6 +237,7 @@ export default class CruResourcePo extends PagePo {
   public search(queryString: any) {
     cy.get('.sortable-table-header .search-box').should('be.visible');
     cy.get(this.searchInput).find('input').clear().type(queryString);
+    cy.wait(1000);
   }
 
   public searchClear() {
@@ -254,7 +256,6 @@ export default class CruResourcePo extends PagePo {
    */
   public censorInColumn(name: string, nameIndex: number, ns: string, nsIndex: number, columnValue: any, columnIndex: number = 2, options: any = {}) {
     this.search(name);
-    cy.wait(2000);
     cy.wrap('async').then(() => {
       this.table.find(name, nameIndex, ns, nsIndex, options?.nameSelector).then((rowIndex: any) => {
         if (typeof rowIndex === 'number') {
@@ -283,7 +284,6 @@ export default class CruResourcePo extends PagePo {
   public goToDetail({ name, nameIndex = 3, ns, nsIndex = 4, nameSelector }: { name: string, nameIndex?: number, ns: string, nsIndex?: number, nameSelector?: string }) {
     this.goToList();
     this.search(name);
-    cy.wait(2000);
     cy.wrap('async').then(() => {
       this.table.find(name, nameIndex, ns, nsIndex, nameSelector).then((rowIndex: any) => {
         if (typeof rowIndex === 'number') {
