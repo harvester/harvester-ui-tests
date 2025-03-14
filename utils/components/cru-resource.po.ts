@@ -202,7 +202,14 @@ export default class CruResourcePo extends PagePo {
     const record = cy.contains(name)
     expect(record.should('be.visible'))
     record.parentsUntil('tbody', 'tr').find(this.actionMenuIcon).click()
-    return cy.get(this.actionMenu).contains(action).click()
+    // VM stop/pause actions has to click apply in one more confirmation modal
+    if(action?.toLowerCase() === 'stop' || action?.toLowerCase() === 'pause') {
+      cy.get(this.actionMenu).contains(action).click()
+      return cy.get('#modals button[data-testid="action-button-async-button"]').click()
+    }else{
+      return cy.get(this.actionMenu).contains(action).click()
+    }
+   
   }
 
   public checkEdit(name: string, namespace?: string, value?: any, action: string = 'Edit Config') {
