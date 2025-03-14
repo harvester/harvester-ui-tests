@@ -8,7 +8,7 @@ const constants = new Constants();
 const vms = new VmsPage();
 const image = new ImagePage();
 
-describe('Auto setup image from cypress environment', () => {
+describe.only('Auto setup image from cypress environment', () => {
     it('Auto setup image from cypress environment', () => {
         const imageEnv = Cypress.env('image');
         const IMAGE_NAME = Cypress._.toLower(imageEnv.name);
@@ -59,7 +59,7 @@ describe('Auto setup image from cypress environment', () => {
  * 4. User should not be able to edit the URL
  * 5. User should be able to create a new image with same name.
  */
-describe('Create an image with valid image URL', () => {
+describe.only('Create an image with valid image URL', () => {
     const imageEnv = Cypress.env('image');
     const IMAGE_NAME = generateName('auto-image-valid-url-test');
     const IMAGE_URL = imageEnv.url;
@@ -514,7 +514,7 @@ describe('Image filtering by labels', () => {
 /**
  * https://harvester.github.io/tests/manual/_incoming/2563-image-naming-inline-css/
  */
-describe.only('Image naming with inline CSS', () => {
+describe('Image naming with inline CSS', () => {
     const imageEnv = Cypress.env('image');
     const IMAGE_NAME = '<strong><em>something_interesting</em></strong>';
     const IMAGE_URL = imageEnv.url;
