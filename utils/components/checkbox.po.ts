@@ -7,8 +7,8 @@ export default class CheckboxPo extends ComponentPo {
     }
 
     this.self().find('[role="checkbox"]').invoke('attr', 'aria-checked').then(isChecked => {
-      if ((newValue && !Boolean(isChecked)) || (!newValue && Boolean(isChecked))) {
-        this.self().click()
+      if ((newValue && isChecked === 'false') || (!newValue && isChecked === 'true')) {
+        this.self().click({ force: true })
       }
     })
 
