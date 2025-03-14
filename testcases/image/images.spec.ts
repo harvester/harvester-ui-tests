@@ -59,7 +59,7 @@ describe.only('Auto setup image from cypress environment', () => {
  * 4. User should not be able to edit the URL
  * 5. User should be able to create a new image with same name.
  */
-describe.only('Create an image with valid image URL', () => {
+describe('Create an image with valid image URL', () => {
     const imageEnv = Cypress.env('image');
     const IMAGE_NAME = generateName('auto-image-valid-url-test');
     const IMAGE_URL = imageEnv.url;
@@ -149,7 +149,7 @@ describe('Create image with invalid URL', () => {
  * Expected Results
  * 1. image “img-1” will be deleted
  */
-describe('Delete VM with exported image', () => {
+describe.only('Delete VM with exported image', () => {
     const IMAGE_NAME = generateName('img-exported-image');
     const VM_NAME = generateName('vm-exported-image');
 
@@ -197,7 +197,7 @@ describe('Delete VM with exported image', () => {
  * Expected Results
  * 1. image “img-1” will be updated
  */
-describe('Update image labels after deleting source VM', () => {
+describe.only('Update image labels after deleting source VM', () => {
     const IMAGE_NAME = generateName('img-delete-vm');
     const VM_NAME = generateName('vm-delete-vm');
 
@@ -309,7 +309,7 @@ describe('Update image labels after deleting source VM', () => {
  * Expected Results
  * 1. Image should upload.
  */
-describe('Create a ISO image via upload', () => {
+describe.only('Create a ISO image via upload', () => {
     const IMAGE_NAME = generateName('auto-image-iso-upload-test');
     const VM_NAME = generateName('auto-image-iso-test-vm');
 
@@ -353,7 +353,7 @@ describe('Create a ISO image via upload', () => {
 /**
  * https://harvester.github.io/tests/manual/_incoming/2562-clone-image/
  */
-describe('Clone image', () => {
+describe.only('Clone image', () => {
     const IMAGE_NAME = generateName('auto-image-test');
     const CLONED_NAME = generateName('cloned-image');
     const imageEnv = Cypress.env('image');
