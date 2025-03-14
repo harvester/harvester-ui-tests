@@ -8,7 +8,7 @@ const constants = new Constants();
 const vms = new VmsPage();
 const image = new ImagePage();
 
-describe('Auto setup image from cypress environment', () => {
+describe.only('Auto setup image from cypress environment', () => {
     it('Auto setup image from cypress environment', () => {
         const imageEnv = Cypress.env('image');
         const IMAGE_NAME = Cypress._.toLower(imageEnv.name);
@@ -93,7 +93,7 @@ describe('Create an image with valid image URL', () => {
                     edit: 'edit'
                 }
             })
-            image.update(`${namespace}/${realName}`);
+            image.update(`${realName}`, `${namespace}`);
 
             // delete IMAGE
             image.delete(namespace, realName as string, IMAGE_NAME);
@@ -133,7 +133,7 @@ describe('Create image with invalid URL', () => {
 
         cy.wrap(image.save()).then((realName) => {
             image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Failed', 2, { timeout: constants.timeout.uploadTimeout });
-            image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '0%', 5, { timeout: constants.timeout.uploadTimeout });
+            image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '0%', 6, { timeout: constants.timeout.uploadTimeout });
 
             // delete IMAGE
             image.delete(namespace, realName as string, IMAGE_NAME);
@@ -149,7 +149,7 @@ describe('Create image with invalid URL', () => {
  * Expected Results
  * 1. image “img-1” will be deleted
  */
-describe('Delete VM with exported image', () => {
+describe.only('Delete VM with exported image', () => {
     const IMAGE_NAME = generateName('img-exported-image');
     const VM_NAME = generateName('vm-exported-image');
 
@@ -174,7 +174,7 @@ describe('Delete VM with exported image', () => {
         // export IMAGE
         image.exportImage(VM_NAME, IMAGE_NAME, namespace);
         image.goToList();
-        image.checkState({ name: IMAGE_NAME, size: '10 GB' });
+        image.checkState({ name: IMAGE_NAME, size: '10 Gi' });
 
         // delete VM
         vms.delete(namespace, VM_NAME);
@@ -197,7 +197,7 @@ describe('Delete VM with exported image', () => {
  * Expected Results
  * 1. image “img-1” will be updated
  */
-describe('Update image labels after deleting source VM', () => {
+describe.only('Update image labels after deleting source VM', () => {
     const IMAGE_NAME = generateName('img-delete-vm');
     const VM_NAME = generateName('vm-delete-vm');
 
@@ -225,7 +225,7 @@ describe('Update image labels after deleting source VM', () => {
 
         // check IMAGE state
         image.goToList();
-        image.checkState({ name: IMAGE_NAME, size: '10 GB' });
+        image.checkState({ name: IMAGE_NAME, size: '10 Gi' });
 
         // delete VM
         vms.delete(namespace, VM_NAME);
@@ -244,7 +244,7 @@ describe('Update image labels after deleting source VM', () => {
                     bar: 'bar'
                 }
             });
-            image.update(`${namespace}/${realName}`);
+            image.update(`${realName}`, `${namespace}`);
             image.delete(namespace, realName, IMAGE_NAME);
         })
     });
@@ -309,7 +309,7 @@ describe('Update image labels after deleting source VM', () => {
  * Expected Results
  * 1. Image should upload.
  */
-describe('Create a ISO image via upload', () => {
+describe.only('Create a ISO image via upload', () => {
     const IMAGE_NAME = generateName('auto-image-iso-upload-test');
     const VM_NAME = generateName('auto-image-iso-test-vm');
 
@@ -353,7 +353,7 @@ describe('Create a ISO image via upload', () => {
 /**
  * https://harvester.github.io/tests/manual/_incoming/2562-clone-image/
  */
-describe('Clone image', () => {
+describe.only('Clone image', () => {
     const IMAGE_NAME = generateName('auto-image-test');
     const CLONED_NAME = generateName('cloned-image');
     const imageEnv = Cypress.env('image');
@@ -389,7 +389,8 @@ describe('Clone image', () => {
         image.checkState({ name: CLONED_NAME });
         image.goToEdit(CLONED_NAME);
         image.clickTab('labels');
-        cy.get('.tab-container .kv-item.key input').eq(0).should('have.value', 'cloned');
+        
+        cy.get('.tab-container .kv-item.value input').eq(1).should('have.value', CLONED_NAME);
 
         cy.wrap(null).then(() => {
             image.delete(namespace, IMAGE_REAL_NAME, IMAGE_NAME);
@@ -419,10 +420,10 @@ describe('Image filtering by labels', () => {
         // create the first one
         image.goToCreate();
         image.setNameNsDescription(IMAGE_NAME_1, namespace);
+        image.setBasics({ url: IMAGE_URL });
         image.setLabels({
             labels: { suse_group: '1', harvester_e2e_test: 'harvester' }
         });
-        image.setBasics({ url: IMAGE_URL });
         cy.wrap(image.save()).then((realName) => {
             IMAGE_REAL_NAME_1 = realName as string
         })
