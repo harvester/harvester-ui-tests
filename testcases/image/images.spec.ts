@@ -514,7 +514,7 @@ describe('Image filtering by labels', () => {
 /**
  * https://harvester.github.io/tests/manual/_incoming/2563-image-naming-inline-css/
  */
-describe('Image naming with inline CSS', () => {
+describe.only('Image naming with inline CSS', () => {
     const imageEnv = Cypress.env('image');
     const IMAGE_NAME = '<strong><em>something_interesting</em></strong>';
     const IMAGE_URL = imageEnv.url;
