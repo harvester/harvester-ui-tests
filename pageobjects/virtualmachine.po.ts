@@ -312,7 +312,7 @@ export class VmsPage extends CruResourcePo {
   }
 
   public init() {
-    cy.intercept('GET', `v1/harvester/${HCI.IMAGE}s`).as('imageList');
+    cy.intercept('GET', `v1/harvester/${HCI.IMAGE}s*`).as('imageList');
     image.goToList();
 
     cy.wait('@imageList').should((res: any) => {

@@ -52,8 +52,8 @@ describe("Create image from Volume", () => {
     // check IMAGE state
     image.goToList();
     image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Active', 2, { timeout: constants.timeout.uploadTimeout })
-    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Completed', 5);
-    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '10 GB', 6);
+    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Completed', 6);
+    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '10 Gi', 7);
 
     // create VM
     vms.goToCreate();
