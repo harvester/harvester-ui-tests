@@ -213,7 +213,6 @@ describe("Support Volume Hot Unplug", () => {
     volumes.censorInColumn(VOLUME_NAME_2, 3, namespace, 4, 'Ready');
 
     // create VM
-
     vms.goToCreate();
     vms.setNameNsDescription(VM_NAME, namespace);
     vms.setBasics('1', '1');
@@ -223,6 +222,7 @@ describe("Support Volume Hot Unplug", () => {
     // check VM state
     vms.checkState({ name: VM_NAME });
 
+    // hot plug / unplug volume
     vms.plugVolume(VM_NAME, [VOLUME_NAME_1, VOLUME_NAME_2], namespace);
     vms.unplugVolume(VM_NAME, [1, 2], namespace);
     vms.plugVolume(VM_NAME, [VOLUME_NAME_1, VOLUME_NAME_2], namespace);
@@ -272,19 +272,20 @@ describe("Edit volume increase size via form", () => {
     cy.wait('@create').should((res: any) => {
       expect(res.response?.statusCode, 'Create VM').to.equal(201);
       const vm = res?.response?.body || {}
-      const volumeName = vm.spec?.template?.spec?.volumes?.[0]?.persistentVolumeClaim?.claimName || '';
+      const rootVolumeName = vm.spec?.template?.spec?.volumes?.[0]?.persistentVolumeClaim?.claimName || '';
 
-      // check VM state
+      // check VM state to Off
       vms.clickAction(VM_NAME, 'Stop');
       vms.searchClear();
       vms.checkState({ name: VM_NAME, state: 'Off' });
 
-      volumes.goToEdit(volumeName);
+      // edit volume to 15Gi
+      volumes.goToEdit(rootVolumeName);
       volumes.setBasics({ size: '15' });
-      volumes.update(`${namespace}/${volumeName}`);
+      volumes.update(`${namespace}/${rootVolumeName}`);
 
       // check VOLUME size change to 15 Gi
-      volumes.censorInColumn(volumeName, 3, namespace, 4, '15 Gi', 5);
+      volumes.censorInColumn(rootVolumeName, 3, namespace, 4, '15 Gi', 5);
 
       // delete VM
       vms.delete(namespace, VM_NAME);

@@ -173,8 +173,14 @@ export default class CruResourcePo extends PagePo {
     this.description().input(value?.description)
   }
 
-  public update(id: string, namespace: string) {
-    cy.intercept('PATCH', `apis/harvesterhci.io/v1beta1/namespaces/${namespace}/virtualmachineimages/${id}`).as('update');
+  public update(id: string, namespace?: string, type?: string) {
+    const _type = type || this.realType;
+    // VM image use PATCH to edit the resource
+    if( _type === 'harvesterhci.io.virtualmachineimage' ){
+      cy.intercept('PATCH', `apis/harvesterhci.io/v1beta1/namespaces/${namespace}/virtualmachineimages/${id}`).as('update');
+    } else {
+      cy.intercept('PUT', `/v1/harvester/${_type}s/${id}*`).as('update');
+    }
     cy.get(this.footerButtons).contains('Save').click()
     cy.wait('@update').then(res => {
       expect(res.response?.statusCode, `Check edit ${id}`).to.equal(200);
