@@ -89,13 +89,13 @@ export class HostsPage extends CruResourcePo {
   //   }
   // }
 
-  enableMaintenance(node: Node) {
-    cy.intercept('POST', `/v1/harvester/${this.realType}s/${node.name}?action=enableMaintenanceMode`).as('enable');
-    this.clickAction(node.customName || node.name, 'Enable Maintenance Mode');
+  enableMaintenance(nodeName: string) {
+    cy.intercept('POST', `/v1/harvester/${this.realType}s/${nodeName}?action=enableMaintenanceMode`).as('enable');
+    this.clickAction(nodeName, 'Enable Maintenance Mode');
     // Maintenance
     cy.get('.card-container').contains('Apply').click();
     cy.wait('@enable').then(res => {
-      expect(res.response?.statusCode, `Enable maintenance ${node.name}`).to.equal(204);
+      expect(res.response?.statusCode, `Enable maintenance ${nodeName}`).to.equal(204);
     })
   }
 

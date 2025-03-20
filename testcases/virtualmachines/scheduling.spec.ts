@@ -17,7 +17,7 @@ describe('VM scheduling on Specific node', () => {
   it('Schedule VM on the Node which is Enable Maintenance Mode', () => {
     const hostList = hostsUtil.list();
 
-    const hostNames: string[] = hostList.map((node: Node) => node.customName || node.name);
+    const hostNames: string[] = hostList.map((node: Node) => node.name || node.customName);
 
     const maintenanceNodeName = hostNames[0]
     const filterMaintenanceNodeNames = hostNames.filter(name => name !== maintenanceNodeName);
@@ -28,7 +28,7 @@ describe('VM scheduling on Specific node', () => {
     vms.checkSpecificNodes({includeNodes: hostNames});
     
     hosts.goToList();
-    hosts.enableMaintenance(hostList[0]);
+    hosts.enableMaintenance(maintenanceNodeName);
     
     // Maintenance nodes should not be selected
     vms.goToCreate();
@@ -36,7 +36,7 @@ describe('VM scheduling on Specific node', () => {
     vms.checkSpecificNodes({includeNodes: filterMaintenanceNodeNames, excludeNodes: [maintenanceNodeName]});
 
     hosts.goToList();
-    hosts.clickAction(hostNames[0], 'Disable Maintenance Mode');
+    hosts.clickAction(maintenanceNodeName, 'Disable Maintenance Mode');
 
     // Check whether all nodes can be selected
     vms.goToCreate();
