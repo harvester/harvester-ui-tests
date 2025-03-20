@@ -9,4 +9,8 @@ export default class LabeledInputPo extends ComponentPo {
 
     return
   }
+
+  clear(){
+    this.self().find('input').clear({ force: true })
+  }
 }
