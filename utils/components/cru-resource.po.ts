@@ -196,7 +196,7 @@ export default class CruResourcePo extends PagePo {
           cy.get(`[data-testid="sortable-table-${rowIndex}-row"]`).find(this.actionMenuIcon).click();
           cy.get(this.actionMenu).should(`${expect ? '' : 'not.'}contain`, action);
           // click outside to close action menu
-          cy.get('body').click(0, 0);
+          cy.get('body').click(500, 0);
         }
       })
     });
