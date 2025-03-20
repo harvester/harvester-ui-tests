@@ -21,26 +21,20 @@ describe('should insert custom name into YAML', () => {
 describe('Check edit host', () => {
   it('Check edit host', () => {
     cy.login();
-    
+
     const host = Cypress.env('host')[0];
+    const hostName = host.name
+    const customName = 'test-custom-name';
+    const consoleUrl = 'https://test-console-url';
 
-    const customName = 'test-custom-name'
-    const consoleUrl = 'test-console-url'
+    // Perform update
+    hosts.editHostBasics(hostName, customName, consoleUrl);
+    hosts.verifyHostUpdate(customName);
 
-    hosts.goToEdit(host.name);
-    hosts.setValue({
-      customName,
-      consoleUrl,
-    })
-
-    // TODO: The footer position is inconsistent on the host edit page.
-    hosts.update(host.name)
-
+    // Revert the custom change
     hosts.goToEdit(customName);
-    hosts.checkBasicValue(customName, {
-      customName,
-      consoleUrl
-    })
+    hosts.cleanValue();
+    hosts.update(host.name);
   })
 })
 

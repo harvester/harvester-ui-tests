@@ -36,6 +36,20 @@ export class HostsPage extends CruResourcePo {
     cy.get(this.editButton).click();
   }
 
+  // Function to edit host with given name and console URL
+  public editHostBasics(name: string, customName: string, consoleUrl: string){
+    this.goToEdit(name);
+    this.setValue({ customName, consoleUrl });
+    this.update(name);
+  };
+
+  // Function to verify host update
+  public verifyHostUpdate (name: string) {
+    this.search(name);
+    cy.get('.console-button [type="button"]').should('not.be.disabled');
+    cy.get('tbody').contains(name).should('exist');
+  };
+
   public editHostsYaml() {
     this.navigateHostsPage();
     cy.get(this.actionsDropdown).first().click();
@@ -50,25 +64,30 @@ export class HostsPage extends CruResourcePo {
     return new LabeledInputPo('.labeled-input', `:contains("Console URL")`)
   }
 
+  cleanValue(){
+    this.customName().clear();
+    this.consoleUrl().clear();
+  }
+
   setValue(value:ValueInterface) {
     this.customName().input(value.customName)
     this.consoleUrl().input(value.consoleUrl)
   }
 
-  checkBasicValue(name: string, options: {
-    customName?: string,
-    consoleUrl?: string,
-  }) {
-    this.goToEdit(name);
+  // checkBasicValue(name: string, options: {
+  //   customName?: string,
+  //   consoleUrl?: string,
+  // }) {
+  //   this.goToEdit(name);
 
-    if (options?.customName) {
-      cy.get('.labeled-input').contains('Custom Name').next().should('have.value', options.customName);
-    }
+  //   if (options?.customName) {
+  //     cy.get('.labeled-input').contains('Custom Name').next().should('have.value', options.customName);
+  //   }
 
-    if (options?.consoleUrl) {
-      cy.get('.labeled-input').contains('Console URL').next().should('have.value', options.consoleUrl);
-    }
-  }
+  //   if (options?.consoleUrl) {
+  //     cy.get('.labeled-input').contains('Console URL').next().should('have.value', options.consoleUrl);
+  //   }
+  // }
 
   enableMaintenance(node: Node) {
     cy.intercept('POST', `/v1/harvester/${this.realType}s/${node.name}?action=enableMaintenanceMode`).as('enable');
