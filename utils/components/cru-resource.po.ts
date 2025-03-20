@@ -29,7 +29,8 @@ export default class CruResourcePo extends PagePo {
   public footerButtons = '.cru-resource-footer'
   public confirmRemove = '.card-container.prompt-remove'
   public searchInput = '.search'
-  public actionMenu = '.dropdownTarget[role="menu"]'
+  // Some action menus still use old style (.list-unstyled.menu), while other menus are in new style (.dropdownTarget)
+  public actionMenu = '.dropdownTarget[role="menu"], .list-unstyled.menu'
   public actionMenuIcon = '.icon-actions'
   public actionButton = '[data-testid="masthead-create"]';
 

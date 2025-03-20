@@ -12,6 +12,8 @@ describe('Stop VM Negative', () => {
 
     const VM_NAME = generateName('test-vm-scheduling');
     const namespace = 'default'
+    const firstNode = hostUtil.list()[0];
+    const nodeName = firstNode?.name || firstNode?.customName
     const imageEnv = Cypress.env('image');
 
     const volume = [{
@@ -21,34 +23,31 @@ describe('Stop VM Negative', () => {
       size: 4
     }];
 
+    // Create VM
     vmPO.goToCreate();
-
     vmPO.setNameNsDescription(VM_NAME, namespace);
     vmPO.setBasics('1', '1');
     vmPO.setVolumes(volume);
-
-    const hostList = hostUtil.list();
-    const host = hostList[0];
-
     vmPO.setNodeScheduling({
       radio: 'specific',
-      nodeName: host.customName || host.name, 
+      nodeName
+    });
+    vmPO.save();
+
+    // Validate VM is Running
+    vmPO.censorInColumn(VM_NAME, 3, namespace, 4, 'Running', 2, {
+      nameSelector: '.name-console a',
+      timeout: constants.timeout.uploadTimeout,
     });
 
-    vmPO.save(); 
-
-    vmPO.censorInColumn(VM_NAME, 3, namespace, 4, 'Running', 2, { 
-      nameSelector: '.name-console a', 
-      timeout: constants.timeout.uploadTimeout 
+    // Stop VM and validate status
+    vmPO.clickAction(VM_NAME, 'Stop');
+    vmPO.censorInColumn(VM_NAME, 3, namespace, 4, 'Stopping', 2, {
+        nameSelector: '.name-console a',
+        timeout: constants.timeout.uploadTimeout,
     });
 
-    vmPO.clickAction(VM_NAME, 'Stop')
-
-    vmPO.censorInColumn(VM_NAME, 3, namespace, 4, 'Stopping', 2, { 
-      nameSelector: '.name-console a', 
-      timeout: constants.timeout.uploadTimeout 
-    });
-
+    // Clean up
     vmPO.deleteVMFromStore(`${namespace}/${VM_NAME}`);
   })
 })
