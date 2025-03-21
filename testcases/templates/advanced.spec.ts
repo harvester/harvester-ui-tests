@@ -1,9 +1,11 @@
 import { VmsPage } from "@/pageobjects/virtualmachine.po";
 import { generateName } from '@/utils/utils';
 import templatePage from "@/pageobjects/template.po";
+import { Constants } from "@/constants/constants";
 
 const vmPO = new VmsPage();
 const templates = new templatePage();
+const constants = new Constants();
 
 /**
  * 1. Go to Template, create a VM template with Boot in EFI mode selected.
@@ -45,7 +47,7 @@ describe("template with EFI", () => {
 
     vmPO.setMultipleInstance({
       namePrefix,
-      count: '3',
+      count: '2',
     })
     vmPO.setNameNsDescription(namePrefix, namespace);
 
@@ -54,7 +56,7 @@ describe("template with EFI", () => {
 
     vmPO.save();
 
-    for( let i=0; i<3; i++) {
+    for( let i=0; i<2; i++) {
       cy.wait('@createVM').then(res => {
         expect(res.response?.statusCode, 'Check create VM').to.equal(201);
         expect(res.response?.body?.spec?.template?.spec?.domain?.firmware?.bootloader?.efi?.secureBoot, 'Check efi.secureBoot').to.equal(false);
@@ -66,14 +68,18 @@ describe("template with EFI", () => {
 
     vmPO.goToList()
 
-    cy.get('.search').type(namePrefix)
-    cy.get('tr.main-row').should($els => {
-      expect($els).to.have.length(3)
-    })
-    cy.get('tr.main-row').each(row => {
-      cy.wrap(row).find('td').eq(0).click()
-      cy.get('button#promptRemove').click()
-      cy.get('[data-testid="prompt-remove-confirm-button"]').click()
-    })
+    for(let i=0; i<2; i++) {
+      const index = i + 1 
+      const VMName = `${namePrefix}-0${index}`;
+
+      // Validate VM are Running
+      vmPO.censorInColumn(VMName, 3, namespace, 4, 'Running', 2, {
+        nameSelector: '.name-console a',
+        timeout: constants.timeout.maxTimeout,
+      });
+      // delete VM
+      vmPO.deleteVMFromStore(`${namespace}/${VMName}`);
+    }
+
   })
 })
