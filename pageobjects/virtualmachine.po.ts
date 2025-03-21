@@ -397,6 +397,7 @@ export class VmsPage extends CruResourcePo {
 
       cy.intercept('POST', `/v1/harvester/${this.realType}s/${namespace}/${vmName}*`).as('plug');
       cy.get('.modal-container .card-container').contains('Apply').click();
+      cy.wait(2000);
       cy.wait('@plug').then(res => {
         expect(res.response?.statusCode, `${this.type} plug Volume`).to.be.oneOf([200, 204]);
         this.searchClear();
@@ -412,6 +413,7 @@ export class VmsPage extends CruResourcePo {
       cy.get('.info-box.box').eq(index).contains('Detach Volume').click();
       cy.intercept('POST', `/v1/harvester/${this.realType}s/${namespace}/${vmName}*`).as('unplug');
       cy.get('.modal-container .card-container').contains('Detach').click();
+      cy.wait(2000);
       cy.wait('@unplug').then(res => {
         expect(res.response?.statusCode, `${this.type} unplug Volume`).to.be.oneOf([200, 204]);
       })
