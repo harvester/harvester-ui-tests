@@ -386,7 +386,7 @@ export class VmsPage extends CruResourcePo {
 
   public plugVolume(vmName: string, volumeNames: Array<string>, namespace: string) {
     this.goToList();
-
+    cy.wait(2000);
     cy.wrap(volumeNames).each((V: string) => {
       this.clickAction(vmName, 'Add Volume').then((_) => {
         cy.get('.modal-container .card-container').within(() => {
@@ -394,10 +394,8 @@ export class VmsPage extends CruResourcePo {
         })
         this.plugVolumeName().select({ option: V });
       })
-
       cy.intercept('POST', `/v1/harvester/${this.realType}s/${namespace}/${vmName}*`).as('plug');
       cy.get('.modal-container .card-container').contains('Apply').click();
-      cy.wait(2000);
       cy.wait('@plug').then(res => {
         expect(res.response?.statusCode, `${this.type} plug Volume`).to.be.oneOf([200, 204]);
         this.searchClear();
@@ -408,12 +406,12 @@ export class VmsPage extends CruResourcePo {
   public unplugVolume(vmName: string, volumeIndexArray: Array<number>, namespace: string) {
     this.goToConfigDetail(vmName);
     this.clickTab('Volume');
-
+    
     cy.wrap(volumeIndexArray).each((index: number) => {
+      cy.wait(2000);
       cy.get('.info-box.box').eq(index).contains('Detach Volume').click();
       cy.intercept('POST', `/v1/harvester/${this.realType}s/${namespace}/${vmName}*`).as('unplug');
       cy.get('.modal-container .card-container').contains('Detach').click();
-      cy.wait(2000);
       cy.wait('@unplug').then(res => {
         expect(res.response?.statusCode, `${this.type} unplug Volume`).to.be.oneOf([200, 204]);
       })
