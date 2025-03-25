@@ -21,28 +21,25 @@ export class EditYamlPage {
 
     private parseYaml() {
         cy.get(this.yamlInput).invoke('text').then((text) => {
-            this.yamlText=yaml.load(text);
+            this.yamlText = yaml.load(text);
         });
         console.log(this.yamlText);
         return this.yamlText;
     }
 
     public insertCustomName(customName:string) {
+        const customNameAnnotation = `harvesterhci.io/host-custom-name: ${customName}`;
         // this.parseYaml();
-        cy.get(this.codeTextArea).invoke('text').then((tempText) => {
-            let temp = JSON.parse(tempText);
-            console.log(temp);
-            // debugger;
-            // let temp = tempText;
-            debugger;
-            let jsonTemp = yaml.load(tempText);
-            debugger;
-            cy.log(jsonTemp)
-            // jsonTemp.metadata.annotations["harvesterhci.io/host-custom-name"] = customName;
-            // this.yamlText = yaml.dump(jsonTemp);
-            // this.clearYaml();
-            // cy.get(this.yamlInput).type(this.yamlText);
-            });
+        cy.get(this.yamlInput).then((editor) => {
+            // codemirror API: https://codemirror.net/5/doc/manual.html
+            const cm = editor[0].CodeMirror;
+
+            cm.focus();
+            cm.setCursor(5, 0); // CodeMirror uses 0-based indexing for lines
+            cm.execCommand('goLineEnd'); // Move cursor to the end
+            cm.execCommand('newlineAndIndent'); // Insert a newline and auto-indent the new line.
+            cm.replaceSelection(customNameAnnotation);
+          });
     }
 
 

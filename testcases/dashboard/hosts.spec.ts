@@ -6,18 +6,47 @@ const hosts = new HostsPage();
 const editYaml = new EditYamlPage();
 
 /**
- * TODO:
- * This will insert custom YAML into the hosts page while editing
- */
+ * 1. Login
+ * 2. Navigate to host page
+ * 3. Click Edit YAML
+ * 4. Insert `harvesterhci.io/host-custom-name: test-custom-name-yaml` in yaml
+ * 5. Save
+ * 6. Check if the custom name is changed
+ * 7. Revert the custom change
+*/
 describe('should insert custom name into YAML', () => {
-  it.skip('should insert custom name into YAML', () => {
+  it('should insert custom name into YAML', () => {
+    const host = Cypress.env('host')[0];
+    const hostName = host.name
+    const customName = 'test-custom-name-yaml';
+
     cy.login();
     hosts.navigateHostsPage();
-    hosts.editHostsYaml();
-    editYaml.insertCustomName('This is a custom name');
+
+    // edit yaml
+    hosts.editHostsYaml(hostName);
+    editYaml.insertCustomName(customName);
+    hosts.saveYaml();
+
+    // check if the custom name is changed
+    hosts.verifyHostName(customName);
+
+    // Revert the custom change
+    hosts.goToEdit(customName);
+    hosts.cleanValue();
+    hosts.update(host.name);
   });
 });
 
+/**
+ * 1. Login
+ * 2. Navigate to host page
+ * 3. Click Edit Config
+ * 4. Change custom name and console URL
+ * 5. Save
+ * 6. Check if the custom name is changed and console URL is NOT disabled
+ * 7. Revert the custom change
+*/
 describe('Check edit host', () => {
   it('Check edit host', () => {
     cy.login();
