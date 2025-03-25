@@ -17,6 +17,7 @@ export class HostsPage extends CruResourcePo {
   private hostList = '.host-list';
   private actionsDropdown = '.role-multi-action';
   private editButton = '.icon-edit';
+  private resourceYamlSave = '.resource-yaml .footer.edit'
   private editYamlButton = '.icon-file';
 
   constructor() {
@@ -27,7 +28,7 @@ export class HostsPage extends CruResourcePo {
   }
 
   public navigateHostsPage() {
-    cy.visit(constants.hostsPage);
+    this.goToList();
   }
 
   public editHosts() {
@@ -46,14 +47,21 @@ export class HostsPage extends CruResourcePo {
   // Function to verify host update
   public verifyHostUpdate (name: string) {
     this.search(name);
-    cy.get('.console-button [type="button"]').should('not.be.disabled');
-    cy.get('tbody').contains(name).should('exist');
+    this.verifyConsoleButtonDisabled()
+    this.verifyHostName(name)
   };
 
-  public editHostsYaml() {
+  verifyHostName(name: string) {
+    cy.get('tbody').contains(name).should('exist');
+  }
+
+  verifyConsoleButtonDisabled(){
+    cy.get('.console-button [type="button"]').should('not.be.disabled');
+  }
+
+  public editHostsYaml(nodeName: string) {
     this.navigateHostsPage();
-    cy.get(this.actionsDropdown).first().click();
-    cy.get(this.editYamlButton).click();
+    this.clickAction(nodeName, 'Edit YAML');
   }
 
   customName() {
@@ -62,6 +70,10 @@ export class HostsPage extends CruResourcePo {
 
   consoleUrl() {
     return new LabeledInputPo('.labeled-input', `:contains("Console URL")`)
+  }
+
+  saveYaml(){
+    cy.get(this.resourceYamlSave).contains('Save').click();
   }
 
   cleanValue(){
