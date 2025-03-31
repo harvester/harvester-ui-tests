@@ -5,8 +5,8 @@ import LabeledInputPo from '@/utils/components/labeled-input.po';
 const constants = new Constants();
 
 export class LoginPage {
-    private usernameInput = '#username';
-    private passwordInput = '#password';
+    private usernameInput = '[data-testid="local-login-username"]';
+    private passwordInput = '[data-testid="local-login-password"]';
     private submitButton = '[data-testid="setup-submit"]';
     private loginButton = '[data-testid="login-submit"]';
     private checkboxEula = '[data-testid="setup-agreement"]'
@@ -35,37 +35,37 @@ export class LoginPage {
     public static isFirstTimeLogin(): Promise<boolean> {
         return new Promise((resolve, reject) => {
             cy.intercept('GET', '/v1/management.cattle.io.setting*').as('getFirstLogin')
-              .visit("/")
-              .wait('@getFirstLogin').then(login => {
-                const data: any[] = login.response?.body.data;
-                const firstLogin = data.find(v => v?.id === "first-login");
-                resolve(firstLogin.value === 'true');
-               })
-              .end();
+                .visit("/")
+                .wait('@getFirstLogin').then(login => {
+                    const data: any[] = login.response?.body.data;
+                    const firstLogin = data.find(v => v?.id === "first-login");
+                    resolve(firstLogin.value === 'true');
+                })
+                .end();
         });
     }
 
-    constructor(username:string = constants.username, passwd: string = constants.password) {
+    constructor(username: string = constants.username, passwd: string = constants.password) {
         this.username = username;
         this.password = passwd;
     }
 
-    public get submitBtn():CypressChainable {
+    public get submitBtn(): CypressChainable {
         return cy.get(`${this.submitButton}`)
     }
 
-    public get loginBtn():CypressChainable {
+    public get loginBtn(): CypressChainable {
         return cy.get(`${this.loginButton}`)
     }
 
-    public Message({iserror=true}: {iserror:boolean}):CypressChainable {
-        return cy.get(`main .login-messages ${iserror? ".error": ".text-success"}`)
+    public Message({ iserror = true }: { iserror: boolean }): CypressChainable {
+        return cy.get(`main .login-messages ${iserror ? ".error" : ".text-success"}`)
     }
 
     /**
      * This visits the login page and logs in
      */
-    public login(username:string = this.username, password:string = this.password) {
+    public login(username: string = this.username, password: string = this.password) {
         cy.visit(constants.loginUrl);
         cy.get(this.usernameInput).type(username);
         cy.get(this.passwordInput).type(password);
@@ -96,11 +96,11 @@ export class LoginPage {
     }
 
     // given checked = true to check the checkbox, false to uncheck the checkbox
-    public checkEula(checked:boolean = true) {
+    public checkEula(checked: boolean = true) {
         cy.get(`${this.checkboxEula} ${this.checkbox}`).then($el => {
-            const isChecked =  $el.attr("aria-checked") === 'true';
+            const isChecked = $el.attr("aria-checked") === 'true';
 
-            if(isChecked && !checked) {
+            if (isChecked && !checked) {
                 cy.log('uncheck eula checkbox')
                 cy.get(this.checkboxEula).click("left");;
             } else if (!isChecked && checked) {
@@ -111,12 +111,12 @@ export class LoginPage {
         return this
     }
 
-    public inputUsername(account:string = this.username) {
+    public inputUsername(account: string = this.username) {
         cy.get(this.usernameInput).type(account);
         return this
     }
 
-    public inputPassword(first:string = this.password, second:string = this.password) {
+    public inputPassword(first: string = this.password, second: string = this.password) {
         const passwds = [first, second];
         cy.get("form [type=Password]").each(($el, idx) => cy.wrap($el).type(passwds[idx]))
         return this
@@ -139,16 +139,16 @@ export class LoginPage {
             if (firstLogin.value === 'true') {
                 cy.get(this.checkboxEula).click('left')
                 cy.get(this.allRadios)
-                .each(($elem, index) => {
-                    if (index === 1) {
-                        cy.wrap($elem).click('left');
-                    }
-                });
+                    .each(($elem, index) => {
+                        if (index === 1) {
+                            cy.wrap($elem).click('left');
+                        }
+                    });
                 // This enters the password into both of the password fields
                 cy.get('[type=Password]')
-                .each(($elem) => {
-                    cy.wrap($elem).type(constants.password);
-                });
+                    .each(($elem) => {
+                        cy.wrap($elem).type(constants.password);
+                    });
                 cy.get(this.submitButton).click();
                 this.validateLogin();
             } else {
@@ -170,7 +170,7 @@ export class LoginPage {
         }
     }
 
-    changePassword({currentPassword, newPassword}: { currentPassword:string, newPassword:string }) {
+    changePassword({ currentPassword, newPassword }: { currentPassword: string, newPassword: string }) {
         cy.visit(constants.accountUrl);
         cy.get('.account').contains('Change Password').click();
         cy.intercept('POST', '/v3/users?action=changepassword').as('changePassword');
