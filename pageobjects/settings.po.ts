@@ -27,6 +27,16 @@ export default class SettingsPagePo extends CruResource {
        super({ type: HCI.SETTING })
     }
 
+    navigateUISettingPage() {
+        this.goToList()
+        cy.get('[data-testid="btn-ui"]').contains('UI').click();
+    }
+
+    clickUseDefaultButton() {
+        cy.get(`.btn.role-primary`).contains('Use the default value').click();
+        cy.get(`.btn.role-primary`).contains('Save').click();
+    }
+
     /**
      * Go to the setting edit page. Then it checks the URL
      */
