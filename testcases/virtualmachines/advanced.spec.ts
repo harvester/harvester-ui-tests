@@ -147,7 +147,7 @@ describe("Verify Booting in EFI mode checkbox", () => {
 
     const namePrefix = 'test-multiple-instances'
     const namespace = 'default'
-
+    const vmCount = 3
     const imageEnv = Cypress.env('image');
     const userData = `#cloud-config
 password: password
@@ -157,7 +157,7 @@ sshpwauth: True
 
     vms.setMultipleInstance({
       namePrefix,
-      count: '3',
+      count: `${vmCount}`,
     })
 
     cy.intercept('POST', '/v1/harvester/kubevirt.io.virtualmachines/*').as('createVM');
@@ -178,7 +178,7 @@ sshpwauth: True
 
     vms.save()
 
-    for( let i=0; i<3; i++) {
+    for( let i=0; i<vmCount; i++) {
       cy.wait('@createVM').then(res => {
         expect(res.response?.statusCode, 'Check create VM').to.equal(201);
         
@@ -193,15 +193,12 @@ sshpwauth: True
       })
     }
 
-    vms.goToList()
-    cy.get('.search').type(namePrefix)
-    cy.get('tr.main-row').should($els => {
-      expect($els, 'Check VM count').to.have.length(3)
-    })
-    cy.get('tr.main-row').each(row => {
-      cy.wrap(row).find('td').eq(0).click()
-      cy.get('button#promptRemove').click()
-      cy.get('[data-testid="prompt-remove-confirm-button"]').click()
+    const vmNames = Cypress._.range(0, vmCount).map(i => `${namePrefix}-0${i+1}`);
+
+    // Validate all VMs are Running and delete them
+    vmNames.forEach(vmName=>{
+      vms.checkVMState(vmName, 'Running');
+      vms.deleteVMFromStore(`${namespace}/${vmName}`);
     })
   })
 })
