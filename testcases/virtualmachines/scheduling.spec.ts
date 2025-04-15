@@ -29,7 +29,8 @@ describe('VM scheduling on Specific node', () => {
     
     hosts.goToList();
     hosts.enableMaintenance(maintenanceNodeName);
-    
+    hosts.checkNodeState('Maintenance');
+
     // Maintenance nodes should not be selected
     vms.goToCreate();
     vms.selectSchedulingType({type: 'specific'});
@@ -37,6 +38,7 @@ describe('VM scheduling on Specific node', () => {
 
     hosts.goToList();
     hosts.clickAction(maintenanceNodeName, 'Disable Maintenance Mode');
+    hosts.checkNodeState('Active');
 
     // Check whether all nodes can be selected
     vms.goToCreate();

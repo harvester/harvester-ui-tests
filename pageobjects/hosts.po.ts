@@ -86,6 +86,10 @@ export class HostsPage extends CruResourcePo {
     this.consoleUrl().input(value.consoleUrl)
   }
 
+  checkNodeState(state: string){
+    cy.get(`[data-testid="sortable-table-0-row"]`).find('td').eq(1 , { timeout: constants.timeout.downloadTimeout }).should('contain', state);
+  }
+
   enableMaintenance(nodeName: string) {
     cy.intercept('POST', `/v1/harvester/${this.realType}s/${nodeName}?action=enableMaintenanceMode`).as('enable');
     this.clickAction(nodeName, 'Enable Maintenance Mode');
