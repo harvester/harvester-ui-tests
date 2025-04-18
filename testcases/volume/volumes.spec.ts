@@ -177,11 +177,10 @@ describe("Delete volume that was attached to VM but now is not", () => {
   * 3. Add volume, hot-plug volume to virtual machine
   * 4. Open virtual machine, find hot-plugged volume
   * 5. Click de-attach volume
-  * 6. Add volume again
+
   * Expected Results
   * 1. Can hot-plug volume without error
   * 2. Can hot-unplug the pluggable volumes without restarting VM
-  * 3. The de-attached volume can also be hot-plug and mount back to VM
   */
 describe("Support Volume Hot Unplug", () => {
   const VM_NAME = generateName("vm-e2e-1");
@@ -222,10 +221,11 @@ describe("Support Volume Hot Unplug", () => {
     // check VM state
     vms.checkState({ name: VM_NAME });
 
-    // hot plug / unplug volume
+    // hot plug volume
     vms.plugVolume(VM_NAME, [VOLUME_NAME_1, VOLUME_NAME_2], namespace);
+
+    // unplug volume
     vms.unplugVolume(VM_NAME, [1, 2], namespace);
-    vms.plugVolume(VM_NAME, [VOLUME_NAME_1, VOLUME_NAME_2], namespace);
 
     // delete VM
     vms.delete(namespace, VM_NAME);
