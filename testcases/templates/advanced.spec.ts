@@ -7,15 +7,15 @@ const vmPO = new VmsPage();
 const templates = new templatePage();
 const constants = new Constants();
 
-/**
- * 1. Go to Template, create a VM template with Boot in EFI mode selected.
- * 2. Go to Virtual Machines, click Create, select Multiple instance, type in a random name prefix, and select the VM template we just created.
- * 3. Create a VM with template
- * Expected Results
- * 1. Check VM setting, the booting in EFI mode is checked
-*/
-describe("template with EFI", () => {
-  it('template with EFI', () => {
+describe("Template Page - Advanced Setting", () => {
+  /**
+   * 1. Go to Template, create a VM template with Boot in EFI mode selected.
+   * 2. Go to Virtual Machines, click Create, select Multiple instance, type in a random name prefix, and select the VM template we just created.
+   * 3. Create a VM with template
+   * Expected Results
+   * 1. Check VM setting, the booting in EFI mode is checked
+  */
+  it('Template with EFI', () => {
     cy.login();
 
     const NAME = generateName('test-efi-template')
@@ -80,6 +80,5 @@ describe("template with EFI", () => {
       // delete VM
       vmPO.deleteVMFromStore(`${namespace}/${VMName}`);
     }
-
   })
 })

@@ -3,17 +3,17 @@ import storagePage from "@/pageobjects/storageClasses.po";
 
 const storageClasses = new storagePage();
 
-/**
- * 1. Login
- * 2. Navigate to the Storage Classes create page
- * 3. Input required values
- * 4. Validate the create request
-*/
-describe('Create a storage class with all the required values', () => {
+describe('StorageClasses Page', () => {
   beforeEach(() => {
     cy.login();
   });
 
+  /**
+   * 1. Login
+   * 2. Navigate to the Storage Classes create page
+   * 3. Input required values
+   * 4. Validate the create request
+  */
   it('Create a storage class with the required values', () => {
     const NAME = generateName('test')
 

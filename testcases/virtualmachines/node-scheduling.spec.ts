@@ -1,13 +1,12 @@
 import { VmsPage } from "@/pageobjects/virtualmachine.po";
-
 import { generateName, host as hostUtil } from '@/utils/utils';
 import { Constants } from "@/constants/constants";
 
 const vmPO = new VmsPage();
 const constants = new Constants();
 
-describe('Stop VM Negative', () => {
-  it('Stop VM Negative', () => {
+describe('Virtual Machine - Node Scheduling', () => {
+  it('Should create a VM with node scheduling', () => {
     cy.login();
 
     const VM_NAME = generateName('test-vm-scheduling');

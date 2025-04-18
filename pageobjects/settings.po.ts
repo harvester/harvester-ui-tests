@@ -56,8 +56,8 @@ export default class SettingsPagePo extends CruResource {
     }
 
     changeLogLevel(id: string, value: string) {
-        new LabeledSelectPo('.labeled-select', `:contains("Value")`).select({option: value})
-
+        const select = new LabeledSelectPo('section .labeled-select.hoverable', `:contains("Value")`);
+        select.select({option: value, selector: '.vs__dropdown-menu'});
         this.update(id);
     }
 

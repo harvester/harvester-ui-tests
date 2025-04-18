@@ -4,12 +4,12 @@ import { generateName, base64Decode } from '@/utils/utils';
 
 const vms = new VmsPage();
 
-describe('Create a new VM and add Enable USB tablet option', () => { 
+describe('Virtual Machine - Advanced', () => { 
   beforeEach(() => {
     cy.login();
   });
 
-  it('Create a new VM with USB tablet checked', () => {
+  it("Create a new VM with 'Enable USB tablet' checked", () => {
     const VM_NAME = generateName('test-usb-tablet')
     const NAMESPACE = 'default'
 
@@ -51,14 +51,8 @@ describe('Create a new VM and add Enable USB tablet option', () => {
 
     vms.deleteFromStore(`${NAMESPACE}/${VM_NAME}`)
   })
-})
 
-describe("Create a new VM and add Install guest agent option", () => {
-  beforeEach(() => {
-    cy.login();
-  });
-
-  it('Create a new VM with Install guest agent checked', () => {
+  it("Create a new VM with 'Install guest agent' checked", () => {
     const VM_NAME = generateName('test-guest-agent')
     const NAMESPACE = 'default'
 
@@ -85,14 +79,8 @@ describe("Create a new VM and add Install guest agent option", () => {
 
     vms.deleteFromStore(`${NAMESPACE}/${VM_NAME}`)
   })
-})
 
-describe("Verify Booting in EFI mode checkbox", () => {
-  beforeEach(() => {
-    cy.login();
-  });
-
-  it('Create a new VM with Booting in EFI mode checked', () => {
+  it("Create a new VM with 'Booting in EFI mode' checked", () => {
     const VM_NAME = generateName('test-efi')
     const NAMESPACE = 'default'
 
@@ -123,26 +111,23 @@ describe("Verify Booting in EFI mode checkbox", () => {
 
     vms.deleteFromStore(`${NAMESPACE}/${VM_NAME}`)
   })
-})
 
-/**
- * 1. Create images using the external path for cloud image.
- * 2. In user data mention the below to access the vm.
- * 3.
- * ```
- * #cloud-config
- * password: password
- * chpasswd: {expire: False}
- * sshpwauth: True
- * ```
- * 4. Create the 3 vms and wait for vm to start.
- * Expected Results
- * 1. 3 vm should come up and start with same config.
- */
- describe("Create multiple instances of the vm with raw image", () => {
-  it('Create multiple instances of the vm with raw image', () => {
-    cy.login();
 
+  /**
+   * 1. Create images using the external path for cloud image.
+   * 2. In user data mention the below to access the vm.
+   * 3.
+   * ```
+   * #cloud-config
+   * password: password
+   * chpasswd: {expire: False}
+   * sshpwauth: True
+   * ```
+   * 4. Create the 3 vms and wait for vm to start.
+   * Expected Results
+   * 1. 3 vm should come up and start with same config.
+   */
+  it('Create 3 VM instances with same user data', () => {
     vms.goToCreate();
 
     const namePrefix = 'test-multiple-instances'
@@ -201,18 +186,14 @@ sshpwauth: True
       vms.deleteVMFromStore(`${namespace}/${vmName}`);
     })
   })
-})
 
-/**
- * 1. Add User data to the VM
- * 2. Save/Create the VM
- * Expected Results
- * 1. User data should in YAML
- */
-describe("Create a VM to add user data", () => {
-  it('Create a VM to add user data', () => {
-    cy.login();
-
+  /**
+   * 1. Add User data to the VM
+   * 2. Save/Create the VM
+   * Expected Results
+   * 1. User data should in YAML
+   */
+  it('Create a VM with user data added', () => {
     const VM_NAME = generateName('test-user-data')
     const namespace = 'default'
 
@@ -256,30 +237,26 @@ sshpwauth: True
 
     vms.deleteFromStore(`${namespace}/${VM_NAME}`)
   })
-})
 
-/**
- * 1. Add Network Data to the VM
- * 2. Save/Create the VM
- * Expected Results
- * 1. Network Data should show in YAML
- */
-describe("Create a new VM with Network Data from the form", () => {
-  it('Create a new VM with Network Data from the form', () => {
-    cy.login();
-
+  /**
+   * 1. Add Network Data to the VM
+   * 2. Save/Create the VM
+   * Expected Results
+   * 1. Network Data should show in YAML
+   */
+  it('Create new VM with Network Data added', () => {
     const VM_NAME = generateName('test-network-data')
     const namespace = 'default'
 
     const imageEnv = Cypress.env('image');
     const networkData = `
 network:
-  version: 1
-  config:
-  - type: physical
-    name: eth0
-    subnets:
-    - type: dhcp
+version: 1
+config:
+- type: physical
+  name: eth0
+  subnets:
+  - type: dhcp
 `
 
     cy.intercept('POST', '/v1/harvester/kubevirt.io.virtualmachines/*').as('createVM');
@@ -314,5 +291,5 @@ network:
     })
 
     vms.deleteFromStore(`${namespace}/${VM_NAME}`)
-  })
+  })  
 })

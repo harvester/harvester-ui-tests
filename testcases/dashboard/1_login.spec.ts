@@ -8,7 +8,7 @@ const constants = new Constants();
  * 1. Login for first time
  * 2. Login with already set password
  */
-describe('login page for harvester', () => {
+describe('Harvester login page', () => {
     it("Invalid Login", () => {
         const page = new LoginPage();
 
@@ -21,12 +21,12 @@ describe('login page for harvester', () => {
 
     })
 
-    it('should login successfully', () => {
+    it('Should login successfully', () => {
         const login = new LoginPage();
         login.login();
     });
 
-    it("Log out from valid login", () => {
+    it("Logout from valid login", () => {
         const page = new LoginPage();
         page.visit()
         page.inputUsername()
@@ -60,7 +60,7 @@ describe('login page for harvester', () => {
 /**
  * https://harvester.github.io/tests/manual/authentication/1409-change-password/
  */
-describe('Change user password', () => {
+describe('Account & API Keys page', () => {
     it("Change user password", () => {
         const page = new LoginPage();
 

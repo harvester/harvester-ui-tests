@@ -12,16 +12,15 @@ interface Vlan {
   clusterNetwork: string,
 }
 
-/**
- * 1. Login
- * 2. Navigate to the network create page
- * 3. click Create button
- * Expected Results
- * 1. create/delete network success
-*/
-export function CheckCreateNetwork() { }
-describe('Check create/delete network', () => {
-  it('Check create/delete network', () => {
+describe('Network Page', () => {
+  /**
+   * 1. Login
+   * 2. Navigate to the network create page
+   * 3. click Create button
+   * Expected Results
+   * 1. create/delete network success
+  */
+  it('Check network can successfully created and deleted', () => {
     cy.login();
 
     const name = generateName('test-network-create');
@@ -35,18 +34,15 @@ describe('Check create/delete network', () => {
 
     network.delete('default', name)
   });
-});
 
-/**
- * 1. Login
- * 2. Navigate to the network create page
- * 3. Input DHCP server IP
- * 4. click Create button
- * Expected Results
- * 1. Create network with DHCP server IP success
-*/
-export function CheckDHCP() { }
-describe('Check network with DHCP', () => {
+  /**
+   * 1. Login
+   * 2. Navigate to the network create page
+   * 3. Input DHCP server IP
+   * 4. click Create button
+   * Expected Results
+   * 1. Create network with DHCP server IP success
+  */
   it('Check network with DHCP', () => {
     cy.login();
 
@@ -77,20 +73,17 @@ describe('Check network with DHCP', () => {
 
     network.deleteFromStore(`${namespace}/${name}`)
   });
-});
 
-/**
- * 1. Login
- * 2. Navigate to the network create page
- * 3. Select manual mode
- * 4. Input Cidr and gateway
- * 5. click Create button
- * Expected Results
- * 1. Create network with manual mode success
-*/
-export function CheckManualMode() { }
-describe('Check network with Manual Mode', () => {
-  it('Check network with Manual Mode', () => {
+  /**
+   * 1. Login
+   * 2. Navigate to the network create page
+   * 3. Select manual mode
+   * 4. Input Cidr and gateway
+   * 5. click Create button
+   * Expected Results
+   * 1. Create network with manual mode success
+  */
+  it('Check network with manual mode', () => {
     cy.login();
 
     cy.intercept('POST', `/v1/harvester/k8s.cni.cncf.io.network-attachment-definitions`).as('create');
@@ -122,61 +115,59 @@ describe('Check network with Manual Mode', () => {
 
     network.deleteFromStore(`${namespace}/${name}`)
   });
-});
 
-
-export function CreateVlan1() { }
-describe('Preset Vlans', () => {
-  function createVlan(vlan: Vlan) {
-    cy.intercept('POST', `/v1/harvester/k8s.cni.cncf.io.network-attachment-definitions`).as('create');
-
-    const name = vlan.name;
-    const namespace = vlan.namespace;
-    network.deleteFromStore(`${namespace}/${name}`, network.storeType);
-    network.create({
-      name,
-      namespace,
-      vlan: vlan.vlan,
-      clusterNetwork: vlan.clusterNetwork,
-    })
-
-    table.clickFlatListBtn();
-
-    cy.wait(2000)
-    cy.wrap('async').then(() => {
-      table.find(name, 2, namespace, 3).then((index) => {
-        if (typeof index === 'number') {
-          cy.get(`[data-testid="sortable-table-${index}-row"]`).find('td').eq(6).should('contain', 'Active')
-        }
+  context('Preset vlans', () => {
+    function createVlan(vlan: Vlan) {
+      cy.intercept('POST', `/v1/harvester/k8s.cni.cncf.io.network-attachment-definitions`).as('create');
+  
+      const name = vlan.name;
+      const namespace = vlan.namespace;
+      network.deleteFromStore(`${namespace}/${name}`, network.storeType);
+      network.create({
+        name,
+        namespace,
+        vlan: vlan.vlan,
+        clusterNetwork: vlan.clusterNetwork,
       })
-    })
-  }
-
-  it('Create Vlan1', () => {
-    const vlans = Cypress.env('vlans') || [];
-    const vlan = vlans[0].vlan
-
-    cy.login();
-
-    createVlan({
-      name: `vlan${vlan}`,
-      namespace: 'default',
-      vlan,
-      clusterNetwork: 'mgmt',
-    })
-  });
-
-  it('Create Vlan2', () => {
-    const vlans = Cypress.env('vlans') || [];
-    const vlan = vlans[1].vlan
-
-    cy.login();
-
-    createVlan({
-      name: `vlan${vlan}`,
-      namespace: 'default',
-      vlan,
-      clusterNetwork: 'mgmt',
-    })
+  
+      table.clickFlatListBtn();
+  
+      cy.wait(2000)
+      cy.wrap('async').then(() => {
+        table.find(name, 2, namespace, 3).then((index) => {
+          if (typeof index === 'number') {
+            cy.get(`[data-testid="sortable-table-${index}-row"]`).find('td').eq(6).should('contain', 'Active')
+          }
+        })
+      })
+    }
+  
+    it('Create Vlan1', () => {
+      const vlans = Cypress.env('vlans') || [];
+      const vlan = vlans[0].vlan
+  
+      cy.login();
+  
+      createVlan({
+        name: `vlan${vlan}`,
+        namespace: 'default',
+        vlan,
+        clusterNetwork: 'mgmt',
+      })
+    });
+  
+    it('Create Vlan2', () => {
+      const vlans = Cypress.env('vlans') || [];
+      const vlan = vlans[1].vlan
+  
+      cy.login();
+  
+      createVlan({
+        name: `vlan${vlan}`,
+        namespace: 'default',
+        vlan,
+        clusterNetwork: 'mgmt',
+      })
+    });
   });
 });

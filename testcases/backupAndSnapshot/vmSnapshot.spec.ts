@@ -6,7 +6,7 @@ import { PageUrl } from "@/constants/constants";
 const vms = new VmsPage();
 const vmsnapshots = new VMSnapshot();
 
-describe('VM snapshot Form Validation', () => {
+describe('VM Snapshot Form Validation', () => {
   const vmName = 'test';
   let createVMSnapshotSuccess: boolean = false ;
   const vmSnapshotName = 'test-vm-snapshot';
@@ -15,7 +15,7 @@ describe('VM snapshot Form Validation', () => {
     cy.login({url: PageUrl.virtualMachine});
   });
 
-  it('Take a vm snapshot from vm', () => {
+  it('Take a VM snapshot from VM', () => {
     // Create a vm to test the snapshot operation
     const namespace = 'default';
 
@@ -47,7 +47,7 @@ describe('VM snapshot Form Validation', () => {
     createVMSnapshotSuccess = true
   })
 
-  it('Restore New VM from vm snapshot', () => {
+  it('Restore new VM from VM snapshot', () => {
     onlyOn(createVMSnapshotSuccess);
     
     const newVMName = 'create-new-from-snapshot';
@@ -61,7 +61,7 @@ describe('VM snapshot Form Validation', () => {
     vms.deleteVMFromStore(`default/${newVMName}`);
   })
 
-  it('Restore Existing VM from vm snapshot', () => {
+  it('Restore existing VM from VM snapshot', () => {
     onlyOn(createVMSnapshotSuccess);
     
     vms.goToList();

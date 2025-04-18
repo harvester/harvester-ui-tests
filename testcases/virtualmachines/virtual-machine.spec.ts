@@ -12,7 +12,7 @@ const constants = new Constants();
 const namespaces = new NamespacePage();
 const imagePO = new ImagePage();
 
-describe('VM Form Validation', () => {
+describe('Virtual Machine', () => {
   beforeEach(() => {
     cy.login({ url: PageUrl.virtualMachine });
   });
@@ -24,7 +24,7 @@ describe('VM Form Validation', () => {
    * 4. Validate the create request
    * 5. Validate the config and yaml should show
   */
-  it('Create a vm with all the default values', () => {
+  it('Create VM with all the default values', () => {
     const VM_NAME = generateName('test-vm-create');
     const namespace = 'default'
     const imageEnv = Cypress.env('image');
@@ -85,27 +85,6 @@ describe('VM Form Validation', () => {
 
     cy.contains('"Memory" is required').should('exist')
   });
-});
-
-/**
- * 1. Login
- * 2. Navigate to the vm page
- * 3. click Create button, choose create "Multiple Instance"
- * Expected Results
- * 1. vm assignment to different nodes
- * @notImplemented
- */
-export function CheckMultiVMScheduler() { }
-describe("automatic assignment to different nodes when creating multiple vm's", () => {
-  it("automatic assignment to different nodes when creating multiple vm's", () => {
-
-  });
-})
-
-describe('VM clone Validation', () => {
-  beforeEach(() => {
-    cy.login({ url: PageUrl.virtualMachine });
-  });
 
   /**
    * https://harvester.github.io/tests/manual/virtual-machines/create-vm-with-existing-volume/
@@ -156,17 +135,9 @@ describe('VM clone Validation', () => {
     vms.deleteVMFromStore(`${namespace}/${VM_NAME}`);
     volumePO.deleteFromStore(`${namespace}/${volumeValue.name}`);
   })
-})
 
-
-describe('VM runStategy Validation (Halted)', () => {
-  beforeEach(() => {
-    cy.login({ url: PageUrl.virtualMachine });
-  });
-
-  const namespace = 'default'
-
-  it('Create VM use Halted (Run Strategy)', () => {
+  it("Create VM use 'Halted' run strategy", () => {
+    const namespace = 'default'
     vms.goToCreate();
 
     const imageEnv = Cypress.env('image');
@@ -192,22 +163,18 @@ describe('VM runStategy Validation (Halted)', () => {
     vms.checkVMState(VM_NAME, 'Off');
     vms.deleteVMFromUI(namespace, VM_NAME)
   });
-})
 
-/**
- * 1. Create vm “vm-1”
- * 2. Create a image “img-1” by export the volume used by vm “vm-1”
- * 3. Delete vm “vm-1”
- * 4. Delete image “img-1”
- * Expected Results
- * 1. Image “img-1” will be deleted
- */
-describe("Delete VM with exported image", () => {
-  it("Delete VM with exported image", () => {
+  /**
+   * 1. Create vm “vm-1”
+   * 2. Create a image “img-1” by export the volume used by vm “vm-1”
+   * 3. Delete vm “vm-1”
+   * 4. Delete image “img-1”
+   * Expected Results
+   * 1. Image “img-1” will be deleted
+  */
+  it("Create image by exporting VM root disk volume", () => {
     const VM_NAME = generateName('vm-1');
     const namespace = 'default'
-
-    cy.login();
 
     const imageEnv = Cypress.env('image');
 
@@ -253,17 +220,67 @@ describe("Delete VM with exported image", () => {
       })
     })
   });
-})
+
+
+  // https://harvester.github.io/tests/manual/_incoming/2578-all-namespace-filtering/  
+  it('Namespace filter should work for VM list', () => {
+    const namespace = 'test'
+
+    // create a new namespace
+    namespaces.deleteFromStore(namespace);
+    namespaces.goToCreate();
+    namespaces.setNameDescription(namespace);
+    namespaces.save();
+
+    // create vm in test namespace
+    const imageEnv = Cypress.env('image');
+
+    const VM_NAME = 'namespace-test';
+    const volume = [{
+      buttonText: 'Add Volume',
+      create: false,
+      image: `default/${Cypress._.toLower(imageEnv.name)}`,
+      size: 4
+    }];
+
+    vms.goToCreate();
+    vms.deleteVMFromStore(`${namespace}/${VM_NAME}`);
+    vms.setNameNsDescription(VM_NAME, namespace);
+    vms.setBasics('1', '4');
+    vms.setVolumes(volume);
+    vms.save();
+
+    // Check whether the namespace is displayed
+    VmsPage.header.findNamespace(namespace);
+    vms.censorInColumn(VM_NAME, 3, namespace, 4, 'Running', 2, { timeout: constants.timeout.maxTimeout, nameSelector: '.name-console a' });
+    vms.deleteVMFromStore(`${namespace}/${VM_NAME}`);
+  })
+});
 
 /**
+ * TODO: implement this test case
+ * 1. Login
+ * 2. Navigate to the vm page
+ * 3. click Create button, choose create "Multiple Instance"
+ * Expected Results
+ * 1. vm assignment to different nodes
+ * @notImplemented
+ */
+// export function CheckMultiVMScheduler() { }
+// describe("automatic assignment to different nodes when creating multiple vm's", () => {
+//   it("automatic assignment to different nodes when creating multiple vm's", () => {
+//   });
+// })
+
+/**
+ * TODO: require docker image or CI machine ssh key
  * 1. Create VM and add SSH Key
  * 2. Save VM
  * Expected Results
  * 1. You should be able to ssh in with correct SSH private key
  */
-// TODO: require docker image or CI machine ssh key
-describe('Edit vm and insert ssh and check the ssh key is accepted for the login', () => {
-  it.skip('Edit vm and insert ssh and check the ssh key is accepted for the login', () => {
+describe.skip('Edit VM and insert ssh and check the ssh key is accepted for the login', () => {
+  it('Edit vm and insert ssh and check the ssh key is accepted for the login', () => {
     cy.login();
 
     const VM_NAME = generateName('test-vm-ssh');
@@ -310,45 +327,5 @@ describe('Edit vm and insert ssh and check the ssh key is accepted for the login
             vms.delete(namespace, VM_NAME)
           })
       })
-  })
-})
-
-describe('All Namespace filtering in VM list', () => {
-  beforeEach(() => {
-    cy.login({ url: PageUrl.namespace });
-  });
-
-  // https://harvester.github.io/tests/manual/_incoming/2578-all-namespace-filtering/  
-  // TODO: go to rancher cluster
-  it('Test Namespace filter', () => {
-    const namespace = 'test'
-
-    // create a new namespace
-    namespaces.deleteFromStore(namespace);
-    namespaces.goToCreate();
-    namespaces.setNameDescription(namespace);
-    namespaces.save();
-
-    // create vm in test namespace
-    const imageEnv = Cypress.env('image');
-
-    const VM_NAME = 'namespace-test';
-    const volume = [{
-      buttonText: 'Add Volume',
-      create: false,
-      image: `default/${Cypress._.toLower(imageEnv.name)}`,
-      size: 4
-    }];
-
-    vms.goToCreate();
-    vms.deleteVMFromStore(`${namespace}/${VM_NAME}`);
-    vms.setNameNsDescription(VM_NAME, namespace);
-    vms.setBasics('1', '4');
-    vms.setVolumes(volume);
-    vms.save();
-
-    // Check whether the namespace is displayed
-    VmsPage.header.findNamespace(namespace);
-    vms.censorInColumn(VM_NAME, 3, namespace, 4, 'Running', 2, { timeout: constants.timeout.maxTimeout, nameSelector: '.name-console a' });
   })
 })

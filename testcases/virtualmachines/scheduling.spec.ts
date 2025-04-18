@@ -9,12 +9,12 @@ const hosts = new HostsPage();
 /**
  * https://harvester.github.io/tests/manual/virtual-machines/vm_schedule_on_node/
  */
-describe('VM scheduling on Specific node', () => { 
+describe('Virtual Machine - Scheduling', () => { 
   beforeEach(() => {
     cy.login();
   });
 
-  it('Schedule VM on the Node which is Enable Maintenance Mode', () => {
+  it('Check the node which enables maintenance mode can not be scheduling in create VM page', () => {
     const hostList = hostsUtil.list();
 
     const hostNames: string[] = hostList.map((node: Node) => node.name || node.customName);

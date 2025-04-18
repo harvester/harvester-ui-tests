@@ -1,23 +1,22 @@
 import { VmsPage } from "@/pageobjects/virtualmachine.po";
 import SettingsPage from "@/pageobjects/settings.po";
-
 import { generateName } from '@/utils/utils';
 
 const vms = new VmsPage();
 const settings = new SettingsPage();
 
-/**
- * 1. Login
- * 2. Navigate to Advanced Settings
- * 3. Edit overcommit-config
- * 4. The field of CPU should be editable
- * 5. Created VM cpu reserved should be CPU / <overcommit-CPU> * 100m
-*/
-describe('Update Overcommit configuration', () => {
+describe('Virtual Machine - Overcommit-Config CPU', () => {
   beforeEach(() => {
     cy.login();
   });
 
+  /**
+   * 1. Login
+   * 2. Navigate to Advanced Settings
+   * 3. Edit overcommit-config
+   * 4. The field of CPU should be editable
+   * 5. Created VM cpu reserved should be CPU / <overcommit-CPU> * 100m
+  */
   it('Edit overcommit-config cpu', () => {
     const VM_NAME = generateName('test-cpu-overcommit')
     const NAMESPACE = 'default'

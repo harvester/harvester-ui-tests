@@ -57,7 +57,7 @@ let rData = {
         user_data_template: ''
     }
 };
-
+// TODO: Rancher integration test should rewrite to install harvester-ui-extension first, then import harvester into Rancher
 /**
  * 1. Create image with cloud image available for openSUSE. http://download.opensuse.org/repositories/Cloud:/Images:/Leap_15.3/images/openSUSE-Leap-15.3.x86_64-NoCloud.qcow2
  * 2. Click save
@@ -71,7 +71,7 @@ let rData = {
  * 4. User should not be able to edit the URL
  * 5. User should be able to create a new image with same name.
  */
-describe('Rancher Integration Test', function () {
+describe.skip('Rancher Integration Test', function () {
     let isFirstTimeLogin: boolean = false;
 
     const IMAGE_NAME = 'focal-server-cloudimg-amd64.img';
@@ -104,7 +104,7 @@ describe('Rancher Integration Test', function () {
     //     network.createVLAN('vlan1', 'default', '1', 'mgmt')
     // });
 
-    it('Rancher First Login', { baseUrl: constants.rancherUrl }, () => {
+    it('Rancher first login', { baseUrl: constants.rancherUrl }, () => {
         onlyOn(isFirstTimeLogin);
         const page = new rancherPage();
         page.firstTimeLogin();
@@ -124,7 +124,7 @@ describe('Rancher Integration Test', function () {
 });
 
 
-describe('Harvester import Rancher', function () {
+describe.skip('Harvester Import Rancher', function () {
     beforeEach(() => {
         cy.fixture('rancher').then((data) => {
             rData = data;
@@ -157,7 +157,7 @@ describe('Harvester import Rancher', function () {
 
 })
 
-describe('Rancher integration', function () {
+describe('Rancher Integration', function () {
     beforeEach(() => {
         cy.fixture('rancher').then((data) => {
             rData = data;
@@ -165,7 +165,7 @@ describe('Rancher integration', function () {
     })
 
 
-    it('Check Harvester Cluster Status', { baseUrl: constants.rancherUrl }, () => {
+    it('Check harvester cluster status', { baseUrl: constants.rancherUrl }, () => {
         // cy.login();
         cy.visit('/');
         cy.wait(constants.timeout.timeout);
@@ -191,8 +191,6 @@ describe('Rancher integration', function () {
         rancher.open_virtualizationDashboard();
 
         virtualizationDashboard.validateClusterName();
-
     });
-
 })
 

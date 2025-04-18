@@ -1,14 +1,11 @@
 import NetworkPage from '@/pageobjects/network.po';
 import { VmsPage } from "@/pageobjects/virtualmachine.po";
-import { LoginPage } from "@/pageobjects/login.po";
 import { generateName } from '@/utils/utils';
 
-const network = new NetworkPage()
+// const network = new NetworkPage()
 const vms = new VmsPage();
-const login = new LoginPage();
 
-//TODO: require two networks
-describe.skip('Add a network to an existing VM with only 1 network', () => {
+describe.skip('Virtual Machine - Add Network', () => {
   const VM_NAME = generateName('test-network');
   const NETWORK_1 = 'vlan1'
   const NETWORK_2 = 'vlan2'
@@ -18,7 +15,8 @@ describe.skip('Add a network to an existing VM with only 1 network', () => {
     cy.login();
   });
 
-  it('VM should start successfully', () => {
+  // TODO: finish this test case
+  it('Should add another network to an existing VM', () => {
     const imageEnv = Cypress.env('image');
 
     const value = {

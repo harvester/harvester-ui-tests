@@ -1,24 +1,22 @@
 import cloudConfigTemplatePage from "@/pageobjects/cloudConfigTemplate.po";
-import { Constants } from "@/constants/constants";
 import {generateName} from '@/utils/utils';
 
-
 const cloudConfig = new cloudConfigTemplatePage();
-const constants = new Constants();
 
-/**
- * 1. Login
- * 2. Navigate to the cloud template create page
- * 3. Input User Data
- * 4. click Create button
- * Expected Results
- * 1. Create cloud config template with user data success
-*/
-export function CheckUserData() {}
-describe("Check create cloud config template", () => {
-  it("Check create cloud config template", () => {
+describe("Cloud Configuration Templates Page", () => {
+  beforeEach(() => {
     cy.login();
+  });
 
+  /**
+   * 1. Login
+   * 2. Navigate to the cloud template create page
+   * 3. Input User Data
+   * 4. click Create button
+   * Expected Results
+   * 1. Create cloud config template with user data success
+  */
+  it("Create cloud config template", () => {
     const namespace = 'default'
     const name = generateName('test-cloud-config-template-create')
 
@@ -41,23 +39,21 @@ describe("Check create cloud config template", () => {
 
     cloudConfig.delete(namespace, name)
   });
-});
 
-/**
- * 1. Login
- * 2. Navigate to the cloud template create page
- * 3. Select Network Data
- * 4. Input Network Data
- * 5. click Create button
- * 6. Edit previous cloud config template
- * 7. Clone previous cloud config template
- * Expected Results
- * 1. Create cloud config template with network data success
- * 2. Edit previous cloud config template success
- * 3. Clone previous cloud config template
-*/
-describe("Check Create network data && Edit && clone", () => {
-  it("Check Create network data && Edit && clone", () => {
+  /**
+   * 1. Login
+   * 2. Navigate to the cloud template create page
+   * 3. Select Network Data
+   * 4. Input Network Data
+   * 5. click Create button
+   * 6. Edit previous cloud config template
+   * 7. Clone previous cloud config template
+   * Expected Results
+   * 1. Create cloud config template with network data success
+   * 2. Edit previous cloud config template success
+   * 3. Clone previous cloud config template
+  */
+  it("Check create network data && edit && clone", () => {
     cy.login();
 
     const namespace = 'default'

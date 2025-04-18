@@ -10,36 +10,32 @@ describe("Support Page", () => {
     page.visit();
   })
 
-  context("Links in Community Support Section", () => {
-    it("Should Link to correct URLs", () => {
-      page.docsBtn.invoke("attr", "href")
-          .should("eq", "https://docs.harvesterhci.io")
+  it("Links in community support section should be correct URLs", () => {
+    page.docsBtn.invoke("attr", "href")
+        .should("eq", "https://docs.harvesterhci.io")
 
-      page.forumsBtn.invoke("attr", "href")
-          .should("eq", "https://forums.rancher.com/c/harvester/")
+    page.forumsBtn.invoke("attr", "href")
+        .should("eq", "https://forums.rancher.com/c/harvester/")
 
-      page.slackBtn.invoke("attr", "href")
-          .should("eq", "https://slack.rancher.io")
+    page.slackBtn.invoke("attr", "href")
+        .should("eq", "https://slack.rancher.io")
 
-      page.fileAnIssueBtn.invoke("attr", "href")
-          .should("eq", "https://github.com/harvester/harvester/issues/new/choose")
-    })
+    page.fileAnIssueBtn.invoke("attr", "href")
+        .should("eq", "https://github.com/harvester/harvester/issues/new/choose")
   })
 
-  context("Download KubeConfig File", () => {
-    it("Should be Downloaded", () => {
-      const kubeconfig = `${Cypress.config("downloadsFolder")}/local.yaml`
-      page.downloadKubeConfigBtn.click()
-      cy.readFile(kubeconfig)
-        .should("exist")
+  it("KubeConfig file should be downloaded successfully", () => {
+    const kubeconfig = `${Cypress.config("downloadsFolder")}/local.yaml`
+    page.downloadKubeConfigBtn.click()
+    cy.readFile(kubeconfig)
+      .should("exist")
 
-      cy.task("readYaml", kubeconfig)
-        .should(val => expect(val).to.not.be.a('string'))
-    })
+    cy.task("readYaml", kubeconfig)
+      .should(val => expect(val).to.not.be.a('string'))
   })
 
   context('Generate Support Bundle', () => {
-    it('is required to input Description', () => {
+    it('Is required to input Description', () => {
       page.generateSupportBundleBtn.click()
 
       page.inputSupportBundle()
@@ -60,7 +56,7 @@ describe("Support Page", () => {
       cy.get("@generateView").should('not.exist')
     })
 
-    it('should download successfully', () => {
+    it('Should download successfully', () => {
       let filename: string | undefined = undefined
       page.generateSupportBundleBtn.click()
 

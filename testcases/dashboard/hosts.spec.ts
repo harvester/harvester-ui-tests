@@ -5,17 +5,18 @@ import { HCI } from '@/constants/types'
 const hosts = new HostsPage();
 const editYaml = new EditYamlPage();
 
-/**
- * 1. Login
- * 2. Navigate to host page
- * 3. Click Edit YAML
- * 4. Insert `harvesterhci.io/host-custom-name: test-custom-name-yaml` in yaml
- * 5. Save
- * 6. Check if the custom name is changed
- * 7. Revert the custom change
-*/
-describe('should insert custom name into YAML', () => {
-  it('should insert custom name into YAML', () => {
+
+describe('Hosts page', () => {
+  /**
+   * 1. Login
+   * 2. Navigate to host page
+   * 3. Click Edit YAML
+   * 4. Insert `harvesterhci.io/host-custom-name: test-custom-name-yaml` in yaml
+   * 5. Save
+   * 6. Check if the custom name is changed
+   * 7. Revert the custom change
+  */
+  it('Should insert node custom name into YAML', () => {
     const host = Cypress.env('host')[0];
     const hostName = host.name
     const customName = 'test-custom-name-yaml';
@@ -36,18 +37,16 @@ describe('should insert custom name into YAML', () => {
     hosts.cleanValue();
     hosts.update(host.name);
   });
-});
 
-/**
- * 1. Login
- * 2. Navigate to host page
- * 3. Click Edit Config
- * 4. Change custom name and console URL
- * 5. Save
- * 6. Check if the custom name is changed and console URL is NOT disabled
- * 7. Revert the custom change
-*/
-describe('Check edit host', () => {
+  /**
+   * 1. Login
+   * 2. Navigate to host page
+   * 3. Click Edit Config
+   * 4. Change custom name and console URL
+   * 5. Save
+   * 6. Check if the custom name is changed and console URL is NOT disabled
+   * 7. Revert the custom change
+  */
   it('Check edit host', () => {
     cy.login();
 
@@ -65,7 +64,7 @@ describe('Check edit host', () => {
     hosts.cleanValue();
     hosts.update(host.name);
   })
-})
+});
 
 describe('Check Add disk', () => {
   it.skip('Check Add disk', () => {

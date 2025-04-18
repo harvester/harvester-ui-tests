@@ -6,13 +6,7 @@ import { VmsPage } from "@/pageobjects/virtualmachine.po";
 const templates = new templatePage();
 const vmPO = new VmsPage();
 
-/**
- * 1. Login
- * 2. Navigate to the VM template create page
- * 3. Input required values
- * 4. Validate the create request
-*/
-describe('Create a vm template with all the required values', () => {
+describe('Template Page', () => {
   const NAME = generateName('test-template')
   const namespace = 'default'
 
@@ -20,7 +14,13 @@ describe('Create a vm template with all the required values', () => {
     cy.login();
   });
 
-  it('Create a vm template with the required values', () => {
+  /**
+   * 1. Login
+   * 2. Navigate to the VM template create page
+   * 3. Input required values
+   * 4. Validate the create request
+  */
+  it('Create VM template with the required values', () => {
     templates.goToCreate()
     templates.setNameNsDescription(NAME, namespace);
     templates.setBasics('1', '1')
@@ -28,21 +28,15 @@ describe('Create a vm template with all the required values', () => {
 
     templates.delete(namespace, NAME)
   });
-});
 
-/**
- * https://harvester.github.io/tests/manual/_incoming/2376-2379-delete-vm-template-default-version/
-*/
-describe('Delete VM template default version', () => {
-  const NAME = generateName('test-template');
-  const namespace = 'default';
-  let DEFAULT_VERSION_NAME = '', NEW_VERSION_NAME = '';
-
-  beforeEach(() => {
-    cy.login();
-  });
-
-  it('Create a vm template with the required values', () => {
+  /**
+   * https://harvester.github.io/tests/manual/_incoming/2376-2379-delete-vm-template-default-version/
+  */
+  it('Delete VM template default version', () => {
+    const NAME = generateName('test-template');
+    const namespace = 'default';
+    let DEFAULT_VERSION_NAME = '', NEW_VERSION_NAME = '';
+    
     cy.intercept('POST', `v1/harvester/${HCI.VM_VERSION}s/default`).as('create');
 
     templates.goToList();
@@ -76,18 +70,14 @@ describe('Delete VM template default version', () => {
 
     templates.delete(namespace, NAME);
   });
-})
 
-/**
- * 1. Create a new VM with a template of non-default version
- * Expected Results
- * 1. After selecting appropriate template and/or version it should populate other fields
- * 2. CPU, Memory, Image, and SSH key should match saved template info
-*/
-describe('Create vm using a template of non-default version', () => {
-  it('Create vm using a template of non-default version', () => {
-    cy.login();
-
+  /**
+   * 1. Create a new VM with a template of non-default version
+   * Expected Results
+   * 1. After selecting appropriate template and/or version it should populate other fields
+   * 2. CPU, Memory, Image, and SSH key should match saved template info
+  */
+  it('Create VM using a template of non-default version', () => {
     const NAME = generateName('test-template')
     const namespace = 'default'
 

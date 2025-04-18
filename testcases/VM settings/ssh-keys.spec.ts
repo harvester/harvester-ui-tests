@@ -1,26 +1,22 @@
-import YAML from 'js-yaml'
-
 import sshPage from "@/pageobjects/sshKey.po";
-import { LoginPage } from "@/pageobjects/login.po";
 import {sshKey as sshKeyExample} from '@/fixtures/ssh-key.js'
 import {generateName} from '@/utils/utils';
 
-
 const ssh = new sshPage();
-const login = new LoginPage();
 
-/**
- * 1. Login
- * 2. Navigate to the ssh create page
- * 3. click Create button
- * Expected Results
- * 1. Create ssh success
-*/
-export function CheckCreateSsh() {}
-describe('Create a ssh key', () => {
-  it('Create a ssh key', () => {
+describe('SSH Keys Page', () => {
+  beforeEach(() => {
     cy.login();
+  });
 
+  /**
+   * 1. Login
+   * 2. Navigate to the ssh create page
+   * 3. Click Create button
+   * Expected Results
+   * 1. Create ssh successfully
+  */
+  it('Create a SSH key successfully', () => {
     const name = generateName('test-ssh-create');
     const namespace = 'default'
 
@@ -38,23 +34,5 @@ describe('Create a ssh key', () => {
     
     ssh.delete(namespace, name)
     ssh.delete(namespace, cloneName)
-  });
-});
-
-export function PresetSsh() {}
-describe('Preset a ssh key', () => {
-  it('Preset a ssh key', () => {
-    cy.login();
-
-    const name = 'preset-ssh';
-    const namespace = 'default'
-
-    const sshKey = Cypress.env('sshKey');
-
-    ssh.create({
-      name,
-      namespace,
-      sshKey,
-    })
   });
 });
