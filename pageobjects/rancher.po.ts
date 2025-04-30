@@ -117,7 +117,6 @@ export class rancherPage {
                 .wait('@getFirstLogin').then(login => {
                     const data: any[] = login.response?.body.data;
                     const firstLogin = data.find(v => v?.id === "first-login");
-                    console.log(firstLogin);
                     resolve(firstLogin.value === 'true');
                 })
                 .end();
