@@ -27,9 +27,9 @@ interface ValueInterface {
 
 export class rancherPage {
 
-    private login_page_usernameInput = '#username';
-    private login_page_passwordInput = '#password > .labeled-input > input';
-    private login_page_loginButton = '#submit > span';
+    private login_page_usernameInput = '[data-testid="local-login-username"]';
+    private login_page_passwordInput = '[data-testid="local-login-password"]';
+    private login_page_loginButton = '[data-testid="login-submit"]';
     private main_page_title = '.title';
     private dashboardURL = 'dashboard/home';
 
@@ -109,7 +109,10 @@ export class rancherPage {
     */
     public static isFirstTimeLogin(): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            cy.intercept('GET', '/v1/management.cattle.io.setting?exclude=metadata.managedFields').as('getFirstLogin')
+            // Use a regex to match both /setting? and /settings? URLs
+            const settingsUrlRegex = /\/v1\/management\.cattle\.io\.settings?\?exclude=metadata\.managedFields/;
+
+            cy.intercept('GET', settingsUrlRegex).as('getFirstLogin')
                 .visit("/")
                 .wait('@getFirstLogin').then(login => {
                     const data: any[] = login.response?.body.data;
