@@ -110,6 +110,41 @@ describe('Rancher Integration Test', function () {
         page.firstTimeLogin();
     });
 
+    /**
+     * Add Harvester UI Extension Repository in Rancher local cluster for installation
+     * 1. Access Rancher local cluster Apps -> Repositories page
+     * 2. Create a new repository
+     * 3. Select the Git repository target
+     * 4. Input the Name, Git Repo URL and Branch
+     * 5. Ensure the new repository in Active state
+     */
+    it('Add Harvester UI Extension Repository', { baseUrl: constants.rancherUrl }, () => {
+        rancher.rancherLogin();
+        rancher.add_local_cluster_repo(
+            "harvester",
+            constants.rancher_ui_extension_repo_url,
+            constants.rancher_ui_extension_branch
+        );
+        cy.wait(5000);
+        rancher.visit_local_cluster_repositories();
+        rancher.checkState('harvester');
+
+    });
+
+    /**
+     * Install Harvester UI Extension in the Extensions -> available page
+     * 1. Visit the Extension -> Available page
+     * 2. Get the Harvester extension card and click the Install button
+     * 3. Search and select the version from the dropdown menu list
+     * 4. Click the Install button to install the Harvester extension
+     * 5. Ensure the Harvester extension card exists
+     * 6. Ensure the Harvester extension card have the uninstall button
+     */
+    it('Install Harvester UI Extension', { baseUrl: constants.rancherUrl }, () => {
+        rancher.rancherLogin();
+        rancher.install_harvester_ui_extension(constants.rancher_ui_extension_version);
+    });
+
     it('Rancher import Harvester', { baseUrl: constants.rancherUrl }, () => {
         rancher.rancherLogin();
 
