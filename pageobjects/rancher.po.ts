@@ -135,6 +135,21 @@ export class rancherPage {
         });
     }
 
+    public getServerVersion(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const serverVersionUrl = '/rancherversion';
+
+            cy.intercept('GET', serverVersionUrl).as('getServerVersion')
+                .visit("/")
+                .wait('@getServerVersion').then(res => {
+                    const responsebody = res.response?.body;
+                    resolve(responsebody as string);
+                })
+                .end();
+        });
+
+    }
+
     /**
      * First time login using ssh 
      */
