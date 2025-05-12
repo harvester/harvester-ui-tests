@@ -10,6 +10,7 @@ export class LoginPage {
     private submitButton = '[data-testid="setup-submit"]';
     private loginButton = '[data-testid="login-submit"]';
     private checkboxEula = '[data-testid="setup-agreement"]'
+    private checkboxTelemetry = '[for="checkbox-telemetry"]';
     private allRadios = '.radio-container';
     private checkbox = '.checkbox-custom';
     private mainPageHeader = 'main .outlet header h1 span';
@@ -106,6 +107,17 @@ export class LoginPage {
             } else if (!isChecked && checked) {
                 cy.log('check eula checkbox')
                 cy.get(this.checkboxEula).click("left");
+            }
+        })
+        return this
+    }
+
+    public checkTelemetry(checked: boolean = true) {
+        cy.get(`${this.checkboxTelemetry} ${this.checkbox}`).then($el => {
+            if (!!$el.attr("aria-checked") === checked) {
+                cy.get(this.checkboxTelemetry);
+            } else {
+                cy.get(this.checkboxTelemetry).click("left");
             }
         })
         return this
