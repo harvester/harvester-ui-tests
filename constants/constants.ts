@@ -8,9 +8,9 @@ export class Constants {
     public rancher_password = Cypress.env("rancherPassword");
     public rancher_vm_user = Cypress.env("rancher_vm_user");
     public rancher_vm_password = Cypress.env("rancher_vm_password");
-    public rancher_ui_extension_repo_url = Cypress.env("ui_extension_repo_url");
-    public rancher_ui_extension_branch = Cypress.env("ui_extension_branch");
-    public rancher_ui_extension_version = Cypress.env("ui_extension_version");
+    public harvester_ui_extension_repo_url = Cypress.env("harvester_ui_extension_repo_url");
+    public harvester_ui_extension_branch = Cypress.env("harvester_ui_extension_branch");
+    public harvester_ui_extension_version = Cypress.env("harvester_ui_extension_version");
     public vagrant_pxe_path = Cypress.env("vagrant_pxe_path");
     public setupUrl = '/auth/setup/';
     public loginUrl = '/auth/login/';

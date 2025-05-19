@@ -250,6 +250,7 @@ export class rancherPage {
         cy.get(this.local_apps_repo_url).type(Repo_url);
         cy.get(this.local_apps_repo_branch).type(Repo_branch);
         cy.get(this.local_apps_repo_create).click();
+        cy.wait(5000);
     }
 
     public install_harvester_ui_extension(version: string) {
@@ -263,9 +264,9 @@ export class rancherPage {
         // Click the Install button to install the Harvester extension
         cy.get(this.install_harvester_extensionButton).click();
         cy.get(this.extension_reloadButton).click();
-        // Todo: Ensure the Harvester extension card exists
+        // Ensure the Harvester extension card exists
         cy.get(this.extension_installed_card_harvester).should('exist', { timeout: constants.timeout.timeout });
-        // Todo: Ensure the Harvester extension card have the uninstall button
+        // Ensure the Harvester extension card have the uninstall button
         cy.get(this.extension_card_harvester_uninstall).should('exist', { timeout: constants.timeout.timeout });
     }
 
