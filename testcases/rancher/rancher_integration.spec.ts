@@ -105,27 +105,29 @@ describe('Rancher Integration Test', function () {
     it('Add Harvester UI Extension Repository', { baseUrl: constants.rancherUrl }, () => {
         rancher.rancherLogin();
 
-        const serverInfo = rancher.getServerVersion();
-        Promise.resolve(serverInfo).then((infoBody) => {
+        cy.wrap(rancher.getServerVersion()).then((infoBody) => {
             cy.log(`Server Info: ${infoBody}`);
-            const parsedData = JSON.parse(infoBody);
-            rancherVersion = parsedData.Version;
-            cy.log(`Rancher version: ${rancherVersion}`);
+            try {
+                const parsedData = JSON.parse(infoBody as string);
+                rancherVersion = parsedData.Version;
+                cy.log(`Rancher version: ${rancherVersion}`);
 
-            const shouldSkipTest = rancherVersion.startsWith('v2.8') || rancherVersion.startsWith('v2.9');
-            onlyOn(!shouldSkipTest);
+                const shouldSkipTest = rancherVersion.startsWith('v2.8') || rancherVersion.startsWith('v2.9');
+                onlyOn(!shouldSkipTest);
 
-            // Continue with the rest of the test if not skipped
-            rancher.add_local_cluster_repo(
-                "harvester",
-                constants.rancher_ui_extension_repo_url,
-                constants.rancher_ui_extension_branch
-            );
-            cy.wait(5000);
-            rancher.visit_local_cluster_repositories();
-            rancher.checkState('harvester');
-            addUIextensionRepo = true;
-
+                // Continue with the rest of the test if not skipped
+                rancher.add_local_cluster_repo(
+                    "harvester",
+                    constants.harvester_ui_extension_repo_url,
+                    constants.harvester_ui_extension_branch,
+                );
+                rancher.visit_local_cluster_repositories();
+                rancher.checkState('harvester');
+                addUIextensionRepo = true;
+            } catch (e) {
+                cy.log('Failed to parse server version JSON: ' + (e instanceof Error ? e.message : e));
+                throw e; // Fail the test
+            }
         });
     });
 
@@ -141,7 +143,7 @@ describe('Rancher Integration Test', function () {
     it('Install Harvester UI Extension', { baseUrl: constants.rancherUrl }, () => {
         onlyOn(addUIextensionRepo);
         rancher.rancherLogin();
-        rancher.install_harvester_ui_extension(constants.rancher_ui_extension_version);
+        rancher.install_harvester_ui_extension(constants.harvester_ui_extension_version);
     });
 
     it('Rancher import Harvester', { baseUrl: constants.rancherUrl }, () => {
