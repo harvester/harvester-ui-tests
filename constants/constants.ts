@@ -8,6 +8,9 @@ export class Constants {
     public rancher_password = Cypress.env("rancherPassword");
     public rancher_vm_user = Cypress.env("rancher_vm_user");
     public rancher_vm_password = Cypress.env("rancher_vm_password");
+    public harvester_ui_extension_repo_url = Cypress.env("harvester_ui_extension_repo_url");
+    public harvester_ui_extension_branch = Cypress.env("harvester_ui_extension_branch");
+    public harvester_ui_extension_version = Cypress.env("harvester_ui_extension_version");
     public vagrant_pxe_path = Cypress.env("vagrant_pxe_path");
     public setupUrl = '/auth/setup/';
     public loginUrl = '/auth/login/';
@@ -29,6 +32,8 @@ export class Constants {
     public rancher_clusterManagmentPage = '/c/local/manager/provisioning.cattle.io.cluster';
     public rancher_cloudCredentialPage = '/c/local/manager/cloudCredential';
     public rancher_nodeTamplatePage = '/c/local/manager/pages/node-templates';
+    public rancher_apps_repositories = '/c/local/apps/catalog.cattle.io.clusterrepo';
+    public rancher_available_extensions = '/c/_/uiplugins#available';
 }
 
 export const PageUrl = {
