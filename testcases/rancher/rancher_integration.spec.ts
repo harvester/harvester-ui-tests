@@ -73,6 +73,8 @@ let rData = {
  */
 describe('Rancher Integration Test', function () {
     let isFirstTimeLogin: boolean = false;
+    let addUIextensionRepo: boolean = false;
+    let rancherVersion: string;
 
     const IMAGE_NAME = 'focal-server-cloudimg-amd64.img';
     const IMAGE_URL = 'https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img';
@@ -86,28 +88,62 @@ describe('Rancher Integration Test', function () {
         isFirstTimeLogin = await rancherPage.isFirstTimeLogin();
     })
 
-    // it.skip('Prepare Harvester Image', () => {
-    //     cy.login();
-
-    //     // create IMAGE according to the value set
-    //     image.goToCreate();
-    //     image.setNameNsDescription(value.name, "default");
-    //     image.setBasics({ url: value.url });
-    //     image.save();
-    //     image.checkState(value);
-
-    // });
-
-    // it.skip('Prepare Harvester VLAN network', () => {
-    //     cy.login();
-
-    //     network.createVLAN('vlan1', 'default', '1', 'mgmt')
-    // });
-
     it('Rancher First Login', { baseUrl: constants.rancherUrl }, () => {
         onlyOn(isFirstTimeLogin);
         const page = new rancherPage();
         page.firstTimeLogin();
+    });
+
+    /**
+     * Add Harvester UI Extension Repository in Rancher local cluster for installation
+     * 1. Access Rancher local cluster Apps -> Repositories page
+     * 2. Create a new repository
+     * 3. Select the Git repository target
+     * 4. Input the Name, Git Repo URL and Branch
+     * 5. Ensure the new repository in Active state
+     */
+    it('Add Harvester UI Extension Repository', { baseUrl: constants.rancherUrl }, () => {
+        rancher.rancherLogin();
+
+        cy.wrap(rancher.getServerVersion()).then((infoBody) => {
+            cy.log(`Server Info: ${infoBody}`);
+            try {
+                const parsedData = JSON.parse(infoBody as string);
+                rancherVersion = parsedData.Version;
+                cy.log(`Rancher version: ${rancherVersion}`);
+
+                const shouldSkipTest = rancherVersion.startsWith('v2.8') || rancherVersion.startsWith('v2.9');
+                onlyOn(!shouldSkipTest);
+
+                // Continue with the rest of the test if not skipped
+                rancher.add_local_cluster_repo(
+                    "harvester",
+                    constants.harvester_ui_extension_repo_url,
+                    constants.harvester_ui_extension_branch,
+                );
+                rancher.visit_local_cluster_repositories();
+                rancher.checkState('harvester');
+                addUIextensionRepo = true;
+            } catch (e) {
+                cy.log('Failed to parse server version JSON: ' + (e instanceof Error ? e.message : e));
+                throw e; // Fail the test
+            }
+        });
+    });
+
+    /**
+     * Install Harvester UI Extension in the Extensions -> available page
+     * 1. Visit the Extension -> Available page
+     * 2. Get the Harvester extension card and click the Install button
+     * 3. Search and select the version from the dropdown menu list
+     * 4. Click the Install button to install the Harvester extension
+     * 5. Ensure the Harvester extension card exists
+     * 6. Ensure the Harvester extension card have the uninstall button
+     */
+    it('Install Harvester UI Extension', { baseUrl: constants.rancherUrl }, () => {
+        onlyOn(addUIextensionRepo);
+        rancher.rancherLogin();
+        rancher.install_harvester_ui_extension(constants.harvester_ui_extension_version);
     });
 
     it('Rancher import Harvester', { baseUrl: constants.rancherUrl }, () => {

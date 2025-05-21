@@ -50,6 +50,18 @@ export class rancherPage {
     private virtual_page_clusterName = ':nth-child(1) > .labeled-input > input';
     private virtual_page_createCluster = '.cru-resource-footer > div > .role-primary';
 
+    private local_apps_repo_name = '[data-testid="name-ns-description-name"]';
+    private local_apps_repo_url = '[data-testid="clusterrepo-git-repo-input"]';
+    private local_apps_repo_branch = '[data-testid="clusterrepo-git-branch-input"]';
+    private local_apps_repo_create = '[data-testid="action-button-async-button"]';
+
+    private extension_card_harvester_install = '[data-testid="extension-card-install-btn-harvester"]';
+    private install_harvester_extensionButton = '[data-testid="install-ext-modal-install-btn"]';
+    private extension_reloadButton = '[data-testid="extension-reload-banner-reload-btn"]';
+
+    private extension_installed_card_harvester = '[data-testid="extension-card-harvester"]';
+    private extension_card_harvester_uninstall = '[data-testid="extension-card-uninstall-btn-harvester"]';
+
     private cloudCredential_page_createButton = '.actions > .btn';
     private cloudCredential_page_harvester = '.subtypes-container > :nth-child(5)';
     private cloudCredential_page_clusterName = 'input[placeholder="A unique name"]';
@@ -123,6 +135,21 @@ export class rancherPage {
         });
     }
 
+    public getServerVersion(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const serverVersionUrl = '/rancherversion';
+
+            cy.intercept('GET', serverVersionUrl).as('getServerVersion')
+                .visit("/")
+                .wait('@getServerVersion').then(res => {
+                    const responsebody = res.response?.body;
+                    resolve(responsebody as string);
+                })
+                .end();
+        });
+
+    }
+
     /**
      * First time login using ssh 
      */
@@ -183,6 +210,14 @@ export class rancherPage {
         cy.visit(constants.rancher_virtualizationManagement);
     }
 
+    public visit_local_cluster_repositories() {
+        cy.visit(constants.rancher_apps_repositories);
+    }
+
+    public visit_available_extensions() {
+        cy.visit(constants.rancher_available_extensions);
+    }
+
     public open_virtualizationDashboard() {
         cy.visit(constants.rancher_virtualizationManagement).then(() => {
             cy.log('visit virtualizationManagement');
@@ -202,6 +237,37 @@ export class rancherPage {
 
     public visit_nodeTemplate() {
         cy.visit(constants.rancher_nodeTamplatePage);
+    }
+
+    public add_local_cluster_repo(Repo_name: string, Repo_url: string, Repo_branch: string) {
+        // Visit the local cluster repository page
+        cy.visit(constants.rancher_apps_repositories + '/create');
+        cy.get(this.local_apps_repo_name).type(Repo_name);
+        // Select the Git repository option
+        const target = new RadioButtonPo('.radio-group');
+        target.input(/Git repository/);
+        // Input Git Repo URL and Branch to create the repository
+        cy.get(this.local_apps_repo_url).type(Repo_url);
+        cy.get(this.local_apps_repo_branch).type(Repo_branch);
+        cy.get(this.local_apps_repo_create).click();
+        cy.wait(5000);
+    }
+
+    public install_harvester_ui_extension(version: string) {
+        // Visit the Extension -> Available page
+        this.visit_available_extensions();
+        // Get the Harvester extension card and click the Install button
+        cy.get(this.extension_card_harvester_install).click();
+        // Search and select the version from the dropdown menu list
+        const versionSelect = new LabeledSelectPo('[data-testid="install-ext-modal-select-version"]');
+        versionSelect.select({ option: version, selector: '.vs__dropdown-menu' });
+        // Click the Install button to install the Harvester extension
+        cy.get(this.install_harvester_extensionButton).click();
+        cy.get(this.extension_reloadButton).click();
+        // Ensure the Harvester extension card exists
+        cy.get(this.extension_installed_card_harvester).should('exist', { timeout: constants.timeout.timeout });
+        // Ensure the Harvester extension card have the uninstall button
+        cy.get(this.extension_card_harvester_uninstall).should('exist', { timeout: constants.timeout.timeout });
     }
 
     public importHarvester() {
