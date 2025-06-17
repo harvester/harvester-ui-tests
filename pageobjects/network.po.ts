@@ -1,8 +1,11 @@
+import { Constants } from "@/constants/constants";
 import LabeledInputPo from '@/utils/components/labeled-input.po';
 import LabeledSelectPo from '@/utils/components/labeled-select.po';
 import RadioButtonPo from '@/utils/components/radio-button.po';
 import { HCI, NETWORK_ATTACHMENT } from '@/constants/types'
 import CruResourcePo from '@/utils/components/cru-resource.po';
+
+const constants = new Constants();
 
 interface ValueInterface {
   namespace: string,
@@ -74,6 +77,13 @@ export default class NetworkPage extends CruResourcePo {
       clusterNetwork,
     });
 
+  }
+
+  checkVlanState({ name = '', namespace = 'default', state = 'Active', routeConnectivity = 'Active', vlanID = '', clusterNetwork = '' }: { name?: string, namespace?: string, state?: string, routeConnectivity?: string, vlanID?: string, clusterNetwork?: string } = {}) {
+    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, clusterNetwork, 6, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, vlanID, 7, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, routeConnectivity, 8, { timeout: constants.timeout.downloadTimeout });
   }
 
 }

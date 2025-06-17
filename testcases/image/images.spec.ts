@@ -61,8 +61,11 @@ describe('Auto setup image from cypress environment', () => {
  */
 describe('Create an image with valid image URL', () => {
     const imageEnv = Cypress.env('image');
+    const largeImageEnv = Cypress.env('largeImage');
     const IMAGE_NAME = generateName('auto-image-valid-url-test');
     const IMAGE_URL = imageEnv.url;
+    const LARGE_IMAGE_NAME = largeImageEnv.name;
+    const LARGE_IMAGE_URL = largeImageEnv.url;
 
     it('Create an image with valid image URL', () => {
         cy.login();
@@ -111,6 +114,25 @@ describe('Create an image with valid image URL', () => {
             image.delete(namespace, realName as string, IMAGE_NAME);
         })
     });
+
+    it('Create an image with large image URL', () => {
+        cy.login();
+
+        // create IMAGE
+        const namespace = 'default';
+
+        image.goToCreate();
+        image.setNameNsDescription(LARGE_IMAGE_NAME, namespace);
+        image.setBasics({ url: LARGE_IMAGE_URL });
+
+        cy.wrap(image.save()).then((realName) => {
+            // check IMAGE state
+            image.checkState_without_size({ name: LARGE_IMAGE_NAME });
+
+        })
+
+    });
+
 });
 
 /**
@@ -389,7 +411,7 @@ describe('Clone image', () => {
         image.checkState({ name: CLONED_NAME });
         image.goToEdit(CLONED_NAME);
         image.clickTab('labels');
-        
+
         cy.get('.tab-container .kv-item.value input[type="text"]').eq(1).should('have.value', CLONED_NAME);
 
         cy.wrap(null).then(() => {
