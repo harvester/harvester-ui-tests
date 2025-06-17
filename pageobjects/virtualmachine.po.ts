@@ -170,6 +170,16 @@ export class VmsPage extends CruResourcePo {
     cy.get('.growl-container .growl-list').find('.growl-text div').contains('Succeed');
   }
 
+  clickMigrateAction(name: string, targetNode: string) {
+    this.clickAction(name, 'Migrate');
+    cy.get('[data-testid="card-title-slot"]').contains('Migration');
+
+    const nodeNameSelector = new LabeledSelectPo('.labeled-select', `:contains("Target Node")`)
+    nodeNameSelector.select({ option: targetNode, selector: '.vs__dropdown-menu' });
+
+    cy.get('.modal-container button').contains('Apply').click();
+  }
+
   public setValue(value: ValueInterface) {
     this.namespace().select({ option: value?.namespace })
     this.name().input(value?.name)
@@ -278,7 +288,8 @@ export class VmsPage extends CruResourcePo {
     } else {
       cy.get('.tab#Network').click()
 
-      cy.get('.info-box.infoBox').then(elms => {
+      // cy.get('.info-box.infoBox').then(elms => {
+      cy.get('[data-testid="input-hen-networkName"]').then(elms => {
         if (elms?.length < networks?.length) {
           for (let i = 0; i < networks?.length - elms?.length; i++) {
             cy.contains('Add Network').click()
@@ -408,7 +419,7 @@ export class VmsPage extends CruResourcePo {
   public unplugVolume(vmName: string, volumeIndexArray: Array<number>, namespace: string) {
     this.goToConfigDetail(vmName);
     this.clickTab('Volume');
-    
+
     cy.wrap(volumeIndexArray).each((index: number) => {
       cy.wait(2000);
       cy.get('.info-box.box').eq(index).contains('Detach Volume').click();
@@ -452,6 +463,49 @@ export class VmsPage extends CruResourcePo {
       option: version,
       selector: '.vs__dropdown-menu',
     })
+  }
+
+  public sshWithCommand(
+    vmName: string,
+    username: string,
+    password: string,
+    remoteCommand: string,
+    checkResult: boolean = true,
+    expectedResult?: string,
+    timeout: number = constants.timeout.maxTimeout
+  ) {
+    // Wait for IP address to be available in the table
+    this.censorInColumn(vmName, 3, 'default', 4, '.', 7, {
+      timeout,
+      nameSelector: '.name-console a'
+    });
+
+    // Get IP address and execute SSH command
+    cy.contains('tr', vmName)
+      .wait(10000) // Wait for system ssh port ready
+      .find('[data-title="IP Address"] > div > span > .copy-to-clipboard-text')
+      .then($els => {
+        const address = $els[0]?.innerText;
+
+        cy.task('sshWithPassword', {
+          username,
+          password,
+          host: address,
+          remoteCommand,
+        })
+          .then((result: any) => {
+            cy.log(`SSH result: ${JSON.stringify(result)}`);
+
+            if (checkResult) {
+              // Validate that expectedResult is provided when checkResult is true
+              if (!expectedResult) {
+                throw new Error('expectedResult must be provided when checkResult is true');
+              }
+              expect(result.stdout).to.include(expectedResult);
+            }
+            // If checkResult is false, just log the result and continue
+          });
+      });
   }
 
   selectMultipleInstance() {

@@ -110,6 +110,36 @@ module.exports = (on, config) => {
         })
       })
     },
+    // Add this new task for password authentication
+    sshWithPassword ({username, password, host='', remoteCommand}) { 
+      return new Promise((resolve, reject) => {
+        const {NodeSSH} = require('node-ssh')
+        const ssh = new NodeSSH()
+
+        ssh.connect({   
+          host: host.trim(),
+          username,
+          password,
+          port: 22,
+          readyTimeout: 60000,
+        })
+        .then(function() {
+          ssh.execCommand(remoteCommand)
+            .then(function(result) {
+              ssh.dispose();
+              resolve(result)
+            })
+            .catch((err) => {
+              ssh.dispose();
+              reject(err)
+            })
+        })
+        .catch(err => {
+          ssh.dispose();
+          reject(err)
+        })
+      })
+    },
 })
 
   // https://github.com/cypress-io/cypress/issues/349

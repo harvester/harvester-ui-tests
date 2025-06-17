@@ -152,7 +152,7 @@ describe('Preset Vlans', () => {
     })
   }
 
-  it('Create Vlan1', () => {
+  it('Create first Vlan', () => {
     const vlans = Cypress.env('vlans') || [];
     const vlan = vlans[0].vlan
 
@@ -166,7 +166,7 @@ describe('Preset Vlans', () => {
     })
   });
 
-  it('Create Vlan2', () => {
+  it('Create second Vlan', () => {
     const vlans = Cypress.env('vlans') || [];
     const vlan = vlans[1].vlan
 
@@ -178,5 +178,29 @@ describe('Preset Vlans', () => {
       vlan,
       clusterNetwork: 'mgmt',
     })
+  });
+
+  it('Create Vlan with id 1', () => {
+    const vlans = Cypress.env('vlans') || [];
+    const vlan = 1
+
+    cy.login();
+
+    createVlan({
+      name: `vlan${vlan}`,
+      namespace: 'default',
+      vlan,
+      clusterNetwork: 'mgmt',
+    })
+
+    network.checkVlanState({
+      name: `vlan${vlan}`,
+      namespace: 'default',
+      state: 'Active',
+      routeConnectivity: 'Active',
+      vlanID: `${vlan}`,
+      clusterNetwork: 'mgmt',
+    });
+
   });
 });

@@ -34,7 +34,7 @@ export class ImagePage extends CruResourcePo {
     return new LabeledInputPo('.labeled-input', `:contains("URL")`);
   }
 
-  setBasics({url, path} : { url?: string, path?: string }) {
+  setBasics({ url, path }: { url?: string, path?: string }) {
     this.clickTab('basic');
 
     if (path) {
@@ -49,9 +49,9 @@ export class ImagePage extends CruResourcePo {
     }
   }
 
-  setLabels({labels = {}} : {labels?: any}) {
+  setLabels({ labels = {} }: { labels?: any }) {
     const keys = Object.keys(labels);
-    
+
     this.clickTab('labels');
     keys.forEach((key, index) => {
       cy.contains('Add Label').click();
@@ -64,7 +64,7 @@ export class ImagePage extends CruResourcePo {
   filterByLabels(labels: any = {}) {
     const keys = Object.keys(labels);
 
-    cy.get('body').click(500,0);
+    cy.get('body').click(500, 0);
     cy.get('.fixed-header-actions').contains('Filter labels').click();
     cy.get('.filter-popup').contains('Clear All').click();
 
@@ -72,23 +72,28 @@ export class ImagePage extends CruResourcePo {
       cy.get('.filter-popup').contains('Add').click();
       cy.get('.filter-popup .box').eq(index + 1).within(() => {
         const keyInput = new LabeledSelectPo('.key .unlabeled-select');
-        
-        keyInput.select({option: key});
-        
+
+        keyInput.select({ option: key });
+
         const valueInput = new LabeledSelectPo('.value .unlabeled-select');
-        
+
         if (labels[key]) {
-          valueInput.select({option: labels[key]});
+          valueInput.select({ option: labels[key] });
         }
       })
     });
-    
+
   }
 
-  checkState({ name = '', namespace = 'default', state = 'Active', progress = 'Completed', size = '16 Mi' }: {name?:string, namespace?:string, state?:string, progress?:string,size?:string} = {}) {
+  checkState({ name = '', namespace = 'default', state = 'Active', progress = 'Completed', size = '16 Mi' }: { name?: string, namespace?: string, state?: string, progress?: string, size?: string } = {}) {
     this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.downloadTimeout });
     this.censorInColumn(name, 3, namespace, 4, progress, 6, { timeout: constants.timeout.downloadTimeout });
     this.censorInColumn(name, 3, namespace, 4, size, 7, { timeout: constants.timeout.downloadTimeout });
+  }
+
+  checkState_without_size({ name = '', namespace = 'default', state = 'Active', progress = 'Completed' }: { name?: string, namespace?: string, state?: string, progress?: string } = {}) {
+    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, progress, 6, { timeout: constants.timeout.downloadTimeout });
   }
 
   public exportImage(vmName: string, imageName: string, namespace: string) {
@@ -107,21 +112,21 @@ export class ImagePage extends CruResourcePo {
     })
   }
 
-  public save( { upload, edit, depth }: { namespace?:string, buttonText?: string, upload?: boolean; edit?: boolean; depth?: number; } = {} ): Promise<string> {
+  public save({ upload, edit, depth }: { namespace?: string, buttonText?: string, upload?: boolean; edit?: boolean; depth?: number; } = {}): Promise<string> {
     return new Promise((resolve, reject) => {
       const interceptName = generateName('create');
 
-      cy.intercept(edit? 'PUT' : 'POST', `/v1/harvester/harvesterhci.io.virtualmachineimages${ upload ? '/*' : edit ? '/*/*' : '' }`).as(interceptName);
+      cy.intercept(edit ? 'PUT' : 'POST', `/v1/harvester/harvesterhci.io.virtualmachineimages${upload ? '/*' : edit ? '/*/*' : ''}`).as(interceptName);
       cy.get('.cru-resource-footer').contains(!edit ? 'Create' : 'Save').click();
       cy.wait(`@${interceptName}`).then(async (res) => {
         if (edit && res.response?.statusCode === 409 && depth === 0) {
-          await this.save({ upload, edit, depth: depth + 1})
+          await this.save({ upload, edit, depth: depth + 1 })
         } else {
-          expect(res.response?.statusCode, `Check save success`).to.equal( edit ? 200 : 201 );
+          expect(res.response?.statusCode, `Check save success`).to.equal(edit ? 200 : 201);
           resolve(res.response?.body?.metadata?.name || '');
         }
       })
-      .end();
+        .end();
     });
   }
 }
