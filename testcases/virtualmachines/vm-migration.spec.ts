@@ -33,7 +33,7 @@ describe('VM Live Migration', () => {
    * 7. VM migrated should be in running state
    * 8. ssh to the vm, check the file content is the same
   */
-  it.only('Migrate VM with cloud init data', () => {
+  it('Migrate VM with cloud init data', () => {
     const VM_NAME = generateName('test-vm-migrate');
     const NAMESPACE = 'default'
     const NETWORK = 'vlan1'
