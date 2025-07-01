@@ -37,7 +37,7 @@ describe('VM Live Migration', () => {
     const VM_NAME = generateName('test-vm-migrate');
     const NAMESPACE = 'default'
     const NETWORK = 'vlan1'
-    const largeImageEnv = Cypress.env('largeImage');;
+    const largeImageEnv = Cypress.env('largeImage');
     const USERDATA = `#cloud-config
 password: password
 chpasswd: { expire: False }
@@ -139,7 +139,7 @@ sshpwauth: True
       'opensuse',
       'password',
       'cat migrate-vm.txt',
-      false,  // Don't check the output
+      true,  // Don't check the output
       'content before migration'
     );
     // tear down
