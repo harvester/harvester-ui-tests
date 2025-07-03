@@ -93,19 +93,22 @@ sshpwauth: True
         const targetNode = hostUtil.list().find(host => {
           const hostName = host.name || host.customName;
           return hostName !== originalNode;
-        })?.name || hostUtil.list().find(host => {
-          const hostName = host.name || host.customName;
-          return hostName !== originalNode;
-        })?.customName;
+        });
+        const targetNodeName = targetNode?.name || targetNode?.customName || '';
 
-        cy.log(`Target node for migration: ${targetNode}`);
+        // Add null check before using targetNodeName
+        if (!targetNodeName) {
+          throw new Error(`No available target node found for migration. Original node: ${originalNode}`);
+        }
+
+        cy.log(`Target node for migration: ${targetNodeName}`);
 
         // Store both nodes for later comparison
         cy.wrap(originalNode).as('originalNode');
-        cy.wrap(targetNode).as('targetNode');
+        cy.wrap(targetNodeName).as('targetNode');
 
         // Perform migration with the found target node
-        vms.clickMigrateAction(VM_NAME, `${targetNode}`);
+        vms.clickMigrateAction(VM_NAME, `${targetNodeName}`);
 
         // Check VM in migrating state
         vms.censorInColumn(VM_NAME, 3, NAMESPACE, 4, 'Migrating', 2, {
@@ -126,7 +129,7 @@ sshpwauth: True
           .invoke('text')
           .then((newNodeName) => {
             const currentNode = newNodeName.trim();
-            expect(currentNode).to.equal(targetNode);
+            expect(currentNode).to.equal(targetNodeName);
             expect(currentNode).to.not.equal(originalNode);
             cy.log(`Migration successful: ${originalNode} → ${currentNode}`);
 
@@ -139,7 +142,7 @@ sshpwauth: True
       'opensuse',
       'password',
       'cat migrate-vm.txt',
-      true,  // Don't check the output
+      true,  // Check the output
       'content before migration'
     );
     // tear down

@@ -288,7 +288,6 @@ export class VmsPage extends CruResourcePo {
     } else {
       cy.get('.tab#Network').click()
 
-      // cy.get('.info-box.infoBox').then(elms => {
       cy.get('[data-testid="input-hen-networkName"]').then(elms => {
         if (elms?.length < networks?.length) {
           for (let i = 0; i < networks?.length - elms?.length; i++) {
@@ -482,17 +481,18 @@ export class VmsPage extends CruResourcePo {
 
     // Get IP address and execute SSH command
     cy.contains('tr', vmName)
-      .wait(10000) // Wait for system ssh port ready
       .find('[data-title="IP Address"] > div > span > .copy-to-clipboard-text')
       .then($els => {
         const address = $els[0]?.innerText;
 
-        cy.task('sshWithPassword', {
-          username,
-          password,
-          host: address,
-          remoteCommand,
-        })
+        // Use Cypress's built-in retry mechanism with should()
+        cy.wrap(null).should(() => {
+          cy.task('sshWithPassword', {
+            username,
+            password,
+            host: address,
+            remoteCommand,
+          })
           .then((result: any) => {
             cy.log(`SSH result: ${JSON.stringify(result)}`);
 
@@ -505,6 +505,7 @@ export class VmsPage extends CruResourcePo {
             }
             // If checkResult is false, just log the result and continue
           });
+        });
       });
   }
 
