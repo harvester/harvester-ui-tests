@@ -48,7 +48,7 @@ export default class SettingsPagePo extends CruResource {
 
         cy.get(`.advanced-setting #${name} button`).click()
   
-        cy.get('span').contains(actionText).click();
+        cy.get('[dropdown-menu-item]').contains(actionText).click();
         
         cy.get(this.detailPageHead).then(() => {
             cy.url().should('eq', `${this.basePath()}${editPageUrl}/${urlSuffix}?mode=edit`)

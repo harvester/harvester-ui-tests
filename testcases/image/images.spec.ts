@@ -155,7 +155,7 @@ describe('Create image with invalid URL', () => {
 
         cy.wrap(image.save()).then((realName) => {
             image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Failed', 2, { timeout: constants.timeout.uploadTimeout });
-            image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '0%', 6, { timeout: constants.timeout.uploadTimeout });
+            image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '0%', 7, { timeout: constants.timeout.uploadTimeout });
 
             // delete IMAGE
             image.delete(namespace, realName as string, IMAGE_NAME);
