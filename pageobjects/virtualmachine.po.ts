@@ -309,16 +309,57 @@ export class VmsPage extends CruResourcePo {
     expect(vm.should('be.visible'))
     vm.click()
 
-    const config = cy.get('.masthead button').contains('Config')
+    const config = cy.get('[data-testid="show-configuration-cta"]').contains('Show Configuration')
     expect(config.should('be.visible'));
     config.click()
-    cy.url().should('contain', 'as=config')
   }
 
   goToYamlEdit(name: string) {
     this.goToList();
 
     this.clickAction(name, 'Edit YAML')
+  }
+
+  /**
+   * Click the Config tab in the configuration panel
+   */
+  public clickConfigTab() {
+    cy.get('[data-testid="btn-config-tab"]').click();
+  }
+
+  /**
+   * Click the YAML tab in the configuration panel
+   */
+  public clickYamlTab() {
+    cy.get('[data-testid="btn-yaml-tab"]').click();
+  }
+
+  /**
+   * Click the Close button in the configuration panel
+   */
+  public clickCloseConfigPanel() {
+    cy.get('.footer .btn.role-secondary').contains('Close').click();
+  }
+
+  /**
+   * Click the Edit Config button in the configuration panel
+   */
+  public clickEditConfig() {
+    cy.get('.footer .btn.role-primary').contains('Edit Config').click();
+  }
+
+  /**
+   * Click the Edit YAML button in the configuration panel (when on YAML tab)
+   */
+  public clickEditYaml() {
+    cy.get('.footer .btn.role-primary').contains('Edit YAML').click();
+  }
+
+  /**
+   * Close the YAML panel by clicking the Close button
+   */
+  public closeYamlPanel() {
+    cy.get('.footer .btn.role-secondary').contains('Close').click();
   }
 
   public init() {
@@ -432,6 +473,10 @@ export class VmsPage extends CruResourcePo {
 
   usbTablet() {
     return new CheckboxPo('.checkbox-container', `:contains("Enable USB Tablet")`)
+  }
+
+  guestAgent() {
+    return new CheckboxPo('.checkbox-container', `:contains("Install guest agent")`)
   }
 
   efiEnabled() {

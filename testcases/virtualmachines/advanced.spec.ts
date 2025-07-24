@@ -1,8 +1,10 @@
 import YAML from 'js-yaml'
 import { VmsPage } from "@/pageobjects/virtualmachine.po";
+import { EditYamlPage } from '@/pageobjects/editYaml.po';
 import { generateName, base64Decode } from '@/utils/utils';
 
 const vms = new VmsPage();
+const editYaml = new EditYamlPage();
 
 describe('Create a new VM and add Enable USB tablet option', () => { 
   beforeEach(() => {
@@ -19,8 +21,8 @@ describe('Create a new VM and add Enable USB tablet option', () => {
 
     const value = {
       name: VM_NAME,
-      cpu: '2',
-      memory: '4',
+      cpu: '1',
+      memory: '2',
       image: Cypress._.toLower(imageEnv.name),
       usbTablet: true,
       namespace: NAMESPACE,
@@ -49,6 +51,8 @@ describe('Create a new VM and add Enable USB tablet option', () => {
       expect(foundTablet).to.equal(true);
     })
 
+    editYaml.clickSaveWhenReady();
+
     vms.deleteFromStore(`${NAMESPACE}/${VM_NAME}`)
   })
 })
@@ -68,8 +72,8 @@ describe("Create a new VM and add Install guest agent option", () => {
 
     const value = {
       name: VM_NAME,
-      cpu: '2',
-      memory: '4',
+      cpu: '1',
+      memory: '2',
       image: Cypress._.toLower(imageEnv.name),
       guestAgent: true,
       namespace: NAMESPACE,
@@ -81,7 +85,7 @@ describe("Create a new VM and add Install guest agent option", () => {
     vms.goToConfigDetail(VM_NAME);
 
     cy.get('.tab#advanced').click()
-    vms.usbTablet().expectChecked()
+    vms.guestAgent().expectChecked()
 
     vms.deleteFromStore(`${NAMESPACE}/${VM_NAME}`)
   })
