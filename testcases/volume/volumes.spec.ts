@@ -225,7 +225,7 @@ describe("Support Volume Hot Unplug", () => {
     vms.plugVolume(VM_NAME, [VOLUME_NAME_1, VOLUME_NAME_2], namespace);
 
     // unplug volume
-    vms.unplugVolume(VM_NAME, [1, 2], namespace);
+    vms.unplugVolume(VM_NAME, [1, 1], namespace);
 
     // delete VM
     vms.delete(namespace, VM_NAME);

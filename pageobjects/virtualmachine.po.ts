@@ -457,8 +457,13 @@ export class VmsPage extends CruResourcePo {
   }
 
   public unplugVolume(vmName: string, volumeIndexArray: Array<number>, namespace: string) {
-    this.goToConfigDetail(vmName);
-    this.clickTab('Volume');
+    this.goToList();
+    cy.get('.search').type(vmName)
+    const vm = cy.contains(vmName)
+    expect(vm.should('be.visible'))
+    vm.click()
+    // Click the volume tab
+    cy.get('[data-testid="disks"]').click();
 
     cy.wrap(volumeIndexArray).each((index: number) => {
       cy.wait(2000);

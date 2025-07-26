@@ -332,7 +332,7 @@ describe('All Namespace filtering in VM list', () => {
     // create vm in test namespace
     const imageEnv = Cypress.env('image');
 
-    const VM_NAME = 'namespace-test';
+    const VM_NAME = generateName('namespace-test');
     const volume = [{
       buttonText: 'Add Volume',
       create: false,
@@ -341,14 +341,16 @@ describe('All Namespace filtering in VM list', () => {
     }];
 
     vms.goToCreate();
-    vms.deleteVMFromStore(`${namespace}/${VM_NAME}`);
     vms.setNameNsDescription(VM_NAME, namespace);
-    vms.setBasics('1', '4');
+    vms.setBasics('1', '1');
     vms.setVolumes(volume);
     vms.save();
 
     // Check whether the namespace is displayed
     VmsPage.header.findNamespace(namespace);
     vms.censorInColumn(VM_NAME, 3, namespace, 4, 'Running', 2, { timeout: constants.timeout.maxTimeout, nameSelector: '.name-console a' });
+
+    // tear down
+    vms.deleteVMFromStore(`${namespace}/${VM_NAME}`);
   })
 })
