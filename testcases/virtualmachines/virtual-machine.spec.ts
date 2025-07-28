@@ -53,9 +53,11 @@ describe('VM Form Validation', () => {
   it('Check VM creation without required-fields', () => {
     vms.goToCreatePage();
     vms.clickFooterBtn();
-    cy.get('#cru-errors').contains('"Name" is required').should('exist');
     cy.get('#cru-errors').contains('"CPU" is required').should('exist');
     cy.get('#cru-errors').contains('"Memory" is required').should('exist');
+    vms.setBasics('1', '1');
+    vms.clickFooterBtn();
+    cy.get('#cru-errors').contains('"Name" is required').should('exist');
     cy.get('#cru-errors').contains('"Image" is required').should('exist');
   })
 
