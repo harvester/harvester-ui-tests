@@ -140,8 +140,11 @@ class Header {
   }
 
   public static findNamespace(ns: string) {
-    cy.get('.top').find('.ns-filter').focus();
+    // Click the namespace filter dropdown
+    cy.get('.top').find('.ns-filter').click();
+    // Find the namespace in the dropdown list items
     cy.get(`.ns-dropdown-menu .ns-options #ns_${ns} .ns-item div`).contains(ns);
+    // click to collapse the dropdown list
     cy.get('.top').find('.ns-filter .ns-values').click({ force: true });
   }
 }

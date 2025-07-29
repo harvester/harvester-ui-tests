@@ -52,8 +52,8 @@ describe("Create image from Volume", () => {
     // check IMAGE state
     image.goToList();
     image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Active', 2, { timeout: constants.timeout.uploadTimeout })
-    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Completed', 6);
-    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '10 Gi', 7);
+    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Completed', 7);
+    image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '10 Gi', 8);
 
     // create VM
     vms.goToCreate();
@@ -225,7 +225,7 @@ describe("Support Volume Hot Unplug", () => {
     vms.plugVolume(VM_NAME, [VOLUME_NAME_1, VOLUME_NAME_2], namespace);
 
     // unplug volume
-    vms.unplugVolume(VM_NAME, [1, 2], namespace);
+    vms.unplugVolume(VM_NAME, [1, 1], namespace);
 
     // delete VM
     vms.delete(namespace, VM_NAME);
