@@ -87,13 +87,13 @@ export class ImagePage extends CruResourcePo {
 
   checkState({ name = '', namespace = 'default', state = 'Active', progress = 'Completed', size = '16 Mi' }: { name?: string, namespace?: string, state?: string, progress?: string, size?: string } = {}) {
     this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.downloadTimeout });
-    this.censorInColumn(name, 3, namespace, 4, progress, 6, { timeout: constants.timeout.downloadTimeout });
-    this.censorInColumn(name, 3, namespace, 4, size, 7, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, progress, 7, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, size, 8, { timeout: constants.timeout.downloadTimeout });
   }
 
   checkState_without_size({ name = '', namespace = 'default', state = 'Active', progress = 'Completed' }: { name?: string, namespace?: string, state?: string, progress?: string } = {}) {
     this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.downloadTimeout });
-    this.censorInColumn(name, 3, namespace, 4, progress, 6, { timeout: constants.timeout.downloadTimeout });
+    this.censorInColumn(name, 3, namespace, 4, progress, 7, { timeout: constants.timeout.downloadTimeout });
   }
 
   public exportImage(vmName: string, imageName: string, namespace: string) {

@@ -57,4 +57,10 @@ export class EditYamlPage {
         console.log(this.yamlText);
     }
 
+    public clickSaveWhenReady() {
+        cy.contains('button', this.saveButton)
+          .should('not.be.disabled')
+          .click();
+    }
+
 }
