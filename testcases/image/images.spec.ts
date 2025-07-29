@@ -155,7 +155,7 @@ describe('Create image with invalid URL', () => {
 
         cy.wrap(image.save()).then((realName) => {
             image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Failed', 2, { timeout: constants.timeout.uploadTimeout });
-            image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '0%', 6, { timeout: constants.timeout.uploadTimeout });
+            image.censorInColumn(IMAGE_NAME, 3, namespace, 4, '0%', 7, { timeout: constants.timeout.uploadTimeout });
 
             // delete IMAGE
             image.delete(namespace, realName as string, IMAGE_NAME);
@@ -555,13 +555,13 @@ describe('Image naming with inline CSS', () => {
         cy.wrap(image.save()).then((realName) => {
             name = realName as string;
         })
-
         // check IMAGE state
         image.checkState({ name: IMAGE_NAME });
 
         // edit IMAGE
         image.goToDetail({ name: IMAGE_NAME, ns: namespace });
-        cy.get('.primaryheader').should('contain', IMAGE_NAME)
+        // Get the title name on the image details page
+        cy.get('.resource-name').should('contain', IMAGE_NAME)
 
         // delete IMAGE
         cy.wrap(null).then(() => {
