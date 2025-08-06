@@ -142,7 +142,7 @@ export class VmsPage extends CruResourcePo {
 
   checkVMState(name: string, state: string = 'Running', namespace: string = 'default') {
     this.goToList();
-    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.uploadTimeout, nameSelector: '.name-console a' });
+    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.provisionTimeout, nameSelector: '.name-console a' });
   }
 
   clickCloneAction(name: string) {
