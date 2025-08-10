@@ -440,6 +440,7 @@ export class VmsPage extends CruResourcePo {
     cy.wait(2000);
     cy.wrap(volumeNames).each((V: string) => {
       // reload the page before plugging a new volume
+      cy.wait(5000);
       cy.reload()
       this.clickAction(vmName, 'Add Volume').then((_) => {
         cy.get('.modal-container .card-container').within(() => {

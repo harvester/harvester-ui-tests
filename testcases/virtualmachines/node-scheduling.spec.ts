@@ -42,6 +42,7 @@ describe('Stop VM Negative', () => {
 
     // Stop VM and validate status is Off
     vmPO.clickAction(VM_NAME, 'Stop');
+    cy.reload();
     vmPO.censorInColumn(VM_NAME, 3, namespace, 4, 'Off', 2, {
         nameSelector: '.name-console a',
         timeout: constants.timeout.uploadTimeout,
