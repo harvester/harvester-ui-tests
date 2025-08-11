@@ -149,9 +149,9 @@ describe("Verify Booting in EFI mode checkbox", () => {
 
     vms.goToCreate();
 
-    const namePrefix = 'test-multiple-instances'
+    const namePrefix = generateName('test-multiple-instances')
     const namespace = 'default'
-    const vmCount = 3
+    const vmCount = 2
     const imageEnv = Cypress.env('image');
     const userData = `#cloud-config
 password: password

@@ -58,6 +58,9 @@ sshpwauth: True
     }
     vms.create(value);
 
+    // Navigate to VM list to ensure we're on the correct page
+    vms.goToList();
+
     // Check VM is running
     vms.censorInColumn(VM_NAME, 3, NAMESPACE, 4, 'Running', 2, { timeout: constants.timeout.maxTimeout, nameSelector: '.name-console a' });
     // Wait for IP address show in table

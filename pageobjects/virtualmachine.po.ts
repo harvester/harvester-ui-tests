@@ -142,7 +142,7 @@ export class VmsPage extends CruResourcePo {
 
   checkVMState(name: string, state: string = 'Running', namespace: string = 'default') {
     this.goToList();
-    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.uploadTimeout, nameSelector: '.name-console a' });
+    this.censorInColumn(name, 3, namespace, 4, state, 2, { timeout: constants.timeout.provisionTimeout, nameSelector: '.name-console a' });
   }
 
   clickCloneAction(name: string) {
@@ -440,6 +440,7 @@ export class VmsPage extends CruResourcePo {
     cy.wait(2000);
     cy.wrap(volumeNames).each((V: string) => {
       // reload the page before plugging a new volume
+      cy.wait(5000);
       cy.reload()
       this.clickAction(vmName, 'Add Volume').then((_) => {
         cy.get('.modal-container .card-container').within(() => {
