@@ -138,9 +138,9 @@ describe("Verify Booting in EFI mode checkbox", () => {
  * chpasswd: {expire: False}
  * sshpwauth: True
  * ```
- * 4. Create the 2 vms and wait for vm to start.
+ * 3. Create the 2 vms and wait for vm to start.
  * Expected Results
- * 5. 2 vms should come up and start with same config.
+ * 4. 2 vms should come up and start with same config.
  */
  describe("Create multiple instances of the vm with raw image", () => {
   it('Create multiple instances of the vm with raw image', () => {
