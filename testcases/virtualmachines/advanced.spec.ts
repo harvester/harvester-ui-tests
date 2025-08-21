@@ -132,16 +132,15 @@ describe("Verify Booting in EFI mode checkbox", () => {
 /**
  * 1. Create images using the external path for cloud image.
  * 2. In user data mention the below to access the vm.
- * 3.
  * ```
  * #cloud-config
  * password: password
  * chpasswd: {expire: False}
  * sshpwauth: True
  * ```
- * 4. Create the 3 vms and wait for vm to start.
+ * 4. Create the 2 vms and wait for vm to start.
  * Expected Results
- * 1. 3 vm should come up and start with same config.
+ * 5. 2 vms should come up and start with same config.
  */
  describe("Create multiple instances of the vm with raw image", () => {
   it('Create multiple instances of the vm with raw image', () => {
