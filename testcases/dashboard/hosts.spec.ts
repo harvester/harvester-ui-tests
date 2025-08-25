@@ -33,6 +33,7 @@ describe('should insert custom name into YAML', () => {
 
     // Revert the custom change
     hosts.goToEdit(customName);
+    cy.reload();
     hosts.cleanValue();
     hosts.update(host.name);
   });
