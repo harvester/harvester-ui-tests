@@ -43,7 +43,7 @@ describe("template with EFI", () => {
 
     vmPO.selectTemplateAndVersion({id: `${namespace}/${NAME}`, version: '1'})
 
-    const namePrefix = 'test-multiple-efi'
+    const namePrefix = generateName('test-multiple-efi')
 
     vmPO.setMultipleInstance({
       namePrefix,

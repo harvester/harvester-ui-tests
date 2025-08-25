@@ -7,3 +7,5 @@ docs
 cypress.env.json
 cypress/*
 *.mp4
+results/
+CLAUDE.md
