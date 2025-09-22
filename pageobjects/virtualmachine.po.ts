@@ -202,7 +202,7 @@ export class VmsPage extends CruResourcePo {
     if (edit) {
       cy.intercept('PUT', '/v1/harvester/kubevirt.io.virtualmachines/*/*').as('createVM');
       cy.get('.cru-resource-footer').contains('Save').click()
-      cy.get('.card-actions').contains('Save & Restart').click()
+      cy.get('.card-actions').contains('Save and Restart').click()
     } else {
       cy.intercept('POST', '/v1/harvester/kubevirt.io.virtualmachines/*').as('createVM');
       cy.get('.cru-resource-footer').contains('Create').click()
@@ -401,18 +401,14 @@ export class VmsPage extends CruResourcePo {
     expect(vm.should('be.visible'))
     vm.parentsUntil('tbody', 'tr').find('.icon-actions').click()
 
-    cy.intercept('GET', `/v1/harvester/configmaps`).as('loadEdit');
-    cy.get('.list-unstyled.menu').contains('Edit Config').click()
-    cy.wait('@loadEdit').then(res => {
-      expect(res.response?.statusCode).to.equal(200);
-    })
+    cy.get('.dropdownTarget').contains('Edit Config').click()
   }
 
   public edit(name: string, value: ValueInterface) {
     this.init()
     this.goToEdit(name);
     this.setValue(value);
-    cy.get('.cru-resource-footer').contains('Save').click()
+    this.save({ edit: true });
   }
 
   public delete(namespace: string, name: string, displayName?: string, { removeRootDisk, id }: { removeRootDisk?: boolean, id?: string } = { removeRootDisk: true }) {
