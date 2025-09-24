@@ -9,3 +9,6 @@ cypress/*
 *.mp4
 results/
 CLAUDE.md
+.claude/
+.github/prompts/
+copilot-instructions.md
