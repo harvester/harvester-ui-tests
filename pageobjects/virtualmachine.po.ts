@@ -314,6 +314,27 @@ export class VmsPage extends CruResourcePo {
     config.click()
   }
 
+  public openDetailPanel(name: string) {
+    this.goToList();
+    cy.get('.search').type(name);
+
+    const vm = cy.contains('.name-console a', name);
+    expect(vm.should('be.visible'));
+    vm.click();
+  }
+
+  public clickMigrationTab() {
+    cy.get('[data-testid="btn-migration"]').click();
+  }
+
+  public readDetailLabelValue(label: string): Cypress.Chainable<string> {
+    return cy.contains('.label .text-label', label)
+      .parent()
+      .find('.value')
+      .invoke('text')
+      .then((text) => text.trim());
+  }
+
   goToYamlEdit(name: string) {
     this.goToList();
 
@@ -518,7 +539,7 @@ export class VmsPage extends CruResourcePo {
     remoteCommand: string,
     checkResult: boolean = true,
     expectedResult?: string,
-    timeout: number = constants.timeout.maxTimeout
+    timeout: number = constants.timeout.uploadTimeout
   ) {
     // Wait for IP address to be available in the table
     this.censorInColumn(vmName, 3, 'default', 4, '.', 7, {
