@@ -40,6 +40,7 @@ export const PageUrl = {
     setting: '/harvester/c/local/harvesterhci.io.setting',
     virtualMachine: '/harvester/c/local/kubevirt.io.virtualmachine',
     vmNetwork: '/harvester/c/local/harvesterhci.io.networkattachmentdefinition',
+    clusterNetwork: '/harvester/c/local/network.harvesterhci.io.clusternetwork',
     namespace: '/harvester/c/local/namespace',
     volumeSnapshot: '/harvester/c/local/harvesterhci.io.volumesnapshot'
 }
