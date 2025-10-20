@@ -76,8 +76,6 @@ sshpwauth: True
       .wait(10000) // Wait for system ssh port ready
       .find('[data-title="IP Address"] > div > span > .copy-to-clipboard-text')
       .then($els => {
-        const address = $els[0]?.innerText
-
         vms.sshWithCommand(
           VM_NAME,
           'opensuse',
@@ -132,39 +130,14 @@ sshpwauth: True
         });
 
         // Verify migration was successful
-        cy.contains('tr', VM_NAME)
-          .find('td')
-          .eq(7)
-          .invoke('text')
-          .then((newNodeName) => {
-            const currentNode = newNodeName.trim();
-            expect(currentNode).to.equal(targetNodeName);
-            expect(currentNode).to.not.equal(originalNode);
-            cy.log(`Migration successful: ${originalNode} → ${currentNode}`);
-
-          });
+        vms.verifyMigrationSuccess(VM_NAME, targetNodeName, originalNode);
       });
 
     vms.openDetailPanel(VM_NAME);
     vms.clickMigrationTab();
 
-    cy.get('@originalNode').then((originalNodeValue) => {
-      const expectedSourceNode = String(originalNodeValue).trim();
-
-      vms.readDetailLabelValue('Source Node').then((sourceNodeValue) => {
-        const detailSourceNode = sourceNodeValue.replace(/\s+/g, ' ').trim();
-        expect(detailSourceNode).to.eq(expectedSourceNode);
-      });
-    });
-
-    cy.get('@targetNode').then((targetNodeValue) => {
-      const expectedTargetNode = String(targetNodeValue).trim();
-
-      vms.readDetailLabelValue('Target Node').then((targetNodeDetailValue) => {
-        const detailTargetNode = targetNodeDetailValue.replace(/\s+/g, ' ').trim();
-        expect(detailTargetNode).to.eq(expectedTargetNode);
-      });
-    });
+    vms.checkNode('@originalNode', 'Source Node');
+    vms.checkNode('@targetNode', 'Target Node');
 
     vms.goToList();
 
@@ -236,8 +209,6 @@ sshpwauth: True
       .wait(10000) // Wait for system ssh port ready
       .find('[data-title="IP Address"] > div > span > .copy-to-clipboard-text')
       .then($els => {
-        const address = $els[0]?.innerText
-
         vms.sshWithCommand(
           VM_NAME,
           'opensuse',
@@ -302,40 +273,15 @@ sshpwauth: True
         });
 
         // Verify migration was successful
-        cy.contains('tr', VM_NAME)
-          .find('td')
-          .eq(7)
-          .invoke('text')
-          .then((newNodeName) => {
-            const currentNode = newNodeName.trim();
-            expect(currentNode).to.equal(targetNodeName);
-            expect(currentNode).to.not.equal(originalNode);
-            cy.log(`Migration successful: ${originalNode} → ${currentNode}`);
-
-          });
+        vms.verifyMigrationSuccess(VM_NAME, targetNodeName, originalNode);
       });
 
     // Open detail panel and verify migration details
     vms.openDetailPanel(VM_NAME);
     vms.clickMigrationTab();
 
-    cy.get('@originalNode').then((originalNodeValue) => {
-      const expectedSourceNode = String(originalNodeValue).trim();
-
-      vms.readDetailLabelValue('Source Node').then((sourceNodeValue) => {
-        const detailSourceNode = sourceNodeValue.replace(/\s+/g, ' ').trim();
-        expect(detailSourceNode).to.eq(expectedSourceNode);
-      });
-    });
-
-    cy.get('@targetNode').then((targetNodeValue) => {
-      const expectedTargetNode = String(targetNodeValue).trim();
-
-      vms.readDetailLabelValue('Target Node').then((targetNodeDetailValue) => {
-        const detailTargetNode = targetNodeDetailValue.replace(/\s+/g, ' ').trim();
-        expect(detailTargetNode).to.eq(expectedTargetNode);
-      });
-    });
+    vms.checkNode('@originalNode', 'Source Node');
+    vms.checkNode('@targetNode', 'Target Node');
 
     vms.goToList();
 
@@ -426,8 +372,6 @@ sshpwauth: True
         timeout: constants.timeout.uploadTimeout 
       })
       .then($els => {
-        const address = $els[0]?.innerText;
-
         // Mount the second disk to /data
         vms.sshWithCommand(
           VM_NAME,
@@ -506,16 +450,7 @@ sshpwauth: True
         cy.wait(10000);
 
         // Verify migration was successful
-        cy.contains('tr', VM_NAME)
-          .find('td')
-          .eq(7)
-          .invoke('text')
-          .then((newNodeName) => {
-            const currentNode = newNodeName.trim();
-            expect(currentNode).to.equal(targetNodeName);
-            expect(currentNode).to.not.equal(originalNode);
-            cy.log(`Migration successful: ${originalNode} → ${currentNode}`);
-          });
+        vms.verifyMigrationSuccess(VM_NAME, targetNodeName, originalNode);
       });
 
     // Open detail panel and verify migration details
@@ -524,23 +459,8 @@ sshpwauth: True
     // Wait for migration details to load
     cy.wait(5000); 
 
-    cy.get('@originalNode').then((originalNodeValue) => {
-      const expectedSourceNode = String(originalNodeValue).trim();
-
-      vms.readDetailLabelValue('Source Node').then((sourceNodeValue) => {
-        const detailSourceNode = sourceNodeValue.replace(/\s+/g, ' ').trim();
-        expect(detailSourceNode).to.eq(expectedSourceNode);
-      });
-    });
-
-    cy.get('@targetNode').then((targetNodeValue) => {
-      const expectedTargetNode = String(targetNodeValue).trim();
-
-      vms.readDetailLabelValue('Target Node').then((targetNodeDetailValue) => {
-        const detailTargetNode = targetNodeDetailValue.replace(/\s+/g, ' ').trim();
-        expect(detailTargetNode).to.eq(expectedTargetNode);
-      });
-    });
+    vms.checkNode('@originalNode', 'Source Node');
+    vms.checkNode('@targetNode', 'Target Node');
 
     vms.goToList();
 
