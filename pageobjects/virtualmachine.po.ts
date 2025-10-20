@@ -335,6 +335,42 @@ export class VmsPage extends CruResourcePo {
       .then((text) => text.trim());
   }
 
+  /**
+   * Check if the node value from an alias matches the expected detail label value
+   * @param nodeName - The Cypress alias (e.g., '@sourceNode', '@targetNode')
+   * @param labelValue - The label text to read from the detail panel (e.g., 'Source Node', 'Target Node')
+   */
+  public checkNode(nodeName: string, labelValue: string) {
+    cy.get(nodeName).then((node) => {
+      const expectedNode = String(node).trim();
+
+      this.readDetailLabelValue(labelValue).then((nodeDetailValue) => {
+        const detailNode = nodeDetailValue.replace(/\s+/g, ' ').trim();
+        expect(detailNode).to.eq(expectedNode);
+      });
+    });
+  }
+
+  /**
+   * Verify that a VM has successfully migrated to a target node
+   * Checks that the VM is now running on the target node and not on the original node
+   * @param vmName - The name of the virtual machine
+   * @param targetNodeName - The target node where the VM should have migrated
+   * @param originalNode - The original node where the VM was running
+   */
+  public verifyMigrationSuccess(vmName: string, targetNodeName: string, originalNode: string) {
+    cy.contains('tr', vmName)
+      .find('td')
+      .eq(7)
+      .invoke('text')
+      .then((newNodeName) => {
+        const currentNode = newNodeName.trim();
+        expect(currentNode).to.equal(targetNodeName);
+        expect(currentNode).to.not.equal(originalNode);
+        cy.log(`Migration successful: ${originalNode} → ${currentNode}`);
+      });
+  }
+
   goToYamlEdit(name: string) {
     this.goToList();
 
