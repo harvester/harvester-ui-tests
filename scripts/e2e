@@ -31,6 +31,9 @@ cp -rf results/mochawesome-report/assets/ ${report_dir}
 ./node_modules/.bin/mochawesome-merge 'results/*.json' > ${report_dir}/merge.json 
 ./node_modules/.bin/marge ${report_dir}/merge.json -o ${report_dir} -f index.html
 
+# Analyze test results
+./scripts/analyze-results "${report_dir}/merge.json"
+
 minio_dir="cypress-test-report/results/"
 minio_name="minio"
 

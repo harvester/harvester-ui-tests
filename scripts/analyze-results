@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Check if JSON file path is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <path_to_json_file>"
+    echo "Example: $0 failure/merge.json"
+    exit 1
+fi
+
+# File to analyze
+JSON_FILE="$1"
+OUTPUT_FILE="test_summary.txt"
+
+# Check if file exists
+if [ ! -f "$JSON_FILE" ]; then
+    echo "Error: File '$JSON_FILE' not found!"
+    exit 1
+fi
+
+# Check if output file already exists and remove it
+if [ -f "$OUTPUT_FILE" ]; then
+    echo "Replacing existing $OUTPUT_FILE..."
+    rm -f "$OUTPUT_FILE"
+fi
+
+# Redirect all output to test_summary.txt
+{
+
+# Extract test statistics
+TEST=$(cat $JSON_FILE | jq ".stats.tests")
+PASSES=$(cat $JSON_FILE | jq ".stats.passes")
+FAILURES=$(cat $JSON_FILE | jq ".stats.failures")
+SKIP=$(cat $JSON_FILE | jq ".stats.skipped")
+PENDING=$(cat $JSON_FILE | jq ".stats.pending")
+TOTAL_SKIPPED=$((SKIP+PENDING))
+
+# Determine overall result
+if [ "$FAILURES" -eq 0 ]; then
+    OVERALL_RESULT="PASS"
+else
+    OVERALL_RESULT="FAIL"
+fi
+
+# Print summary
+echo "======================================================================================="
+echo "Overall Result: $OVERALL_RESULT"
+echo "TEST_RESULTS: Tests: $TEST | Pass: $PASSES | Failed: $FAILURES | Skipped: $TOTAL_SKIPPED"
+echo ""
+
+# List failed tests if any
+if [ "$FAILURES" -gt 0 ]; then
+    echo "Failed Tests:"
+    echo "======================================================================================="
+    count=1
+    cat $JSON_FILE | jq -r '.results[].suites[] | .. | objects | select(.state == "failed") | .title' | while read -r line; do
+        echo "$count. $line"
+        count=$((count + 1))
+    done
+else
+    echo "No failed tests found!"
+fi
+
+} > "$OUTPUT_FILE"
+
+echo "Test summary has been written to $OUTPUT_FILE"
