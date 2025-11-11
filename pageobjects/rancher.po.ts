@@ -55,11 +55,17 @@ export class rancherPage {
     private local_apps_repo_branch = '[data-testid="clusterrepo-git-branch-input"]';
     private local_apps_repo_create = '[data-testid="action-button-async-button"]';
 
+    private extension_card_harvester = '[data-testid="extension-card-harvester"]';
+    private extension_card_menu_button = '[data-testid="item-card-header-action-menu"]';
+    private extension_dropdown_menu_install = 'div[dropdown-menu-item]';
     private extension_card_harvester_install = '[data-testid="extension-card-install-btn-harvester"]';
     private install_harvester_extensionButton = '[data-testid="install-ext-modal-install-btn"]';
     private extension_reloadButton = '[data-testid="extension-reload-banner-reload-btn"]';
 
+    private extension_installed_tab = '[data-testid="installed"]';
+    private extension_available_tab = '[data-testid="available"]';
     private extension_installed_card_harvester = '[data-testid="extension-card-harvester"]';
+    private extension_installed_card_harvester_213 = '[data-testid="item-card-cluster/harvester/harvester"]';
     private extension_card_harvester_uninstall = '[data-testid="extension-card-uninstall-btn-harvester"]';
 
     private cloudCredential_page_createButton = '.actions > .btn';
@@ -253,21 +259,42 @@ export class rancherPage {
         cy.wait(5000);
     }
 
-    public install_harvester_ui_extension(version: string) {
+    public install_harvester_ui_extension(version: string, rancherVersion: string) {
         // Visit the Extension -> Available page
         this.visit_available_extensions();
-        // Get the Harvester extension card and click the Install button
-        cy.get(this.extension_card_harvester_install).click();
+        
+        // Check Rancher version to determine which UI flow to use
+        if (rancherVersion.startsWith('v2.13')) {
+            // Rancher v2.13+ uses dropdown menu for install
+            cy.log('Using Rancher v2.13+ UI flow');
+            // Click the 3-dot menu button on the Harvester extension card
+            cy.get(this.extension_card_menu_button).click();
+            // Click the Install option from the dropdown menu
+            cy.get(this.extension_dropdown_menu_install).contains('Install').click();
+        } else {
+            // Rancher < v2.13 uses direct install button
+            cy.log('Using Rancher < v2.13 UI flow');
+            cy.get(this.extension_card_harvester_install).click();
+        }
+        
+        // Common steps for both versions
         // Search and select the version from the dropdown menu list
         const versionSelect = new LabeledSelectPo('[data-testid="install-ext-modal-select-version"]');
         versionSelect.select({ option: version, selector: '.vs__dropdown-menu' });
         // Click the Install button to install the Harvester extension
         cy.get(this.install_harvester_extensionButton).click();
         cy.get(this.extension_reloadButton).click();
-        // Ensure the Harvester extension card exists
-        cy.get(this.extension_installed_card_harvester).should('exist', { timeout: constants.timeout.timeout });
-        // Ensure the Harvester extension card have the uninstall button
-        cy.get(this.extension_card_harvester_uninstall).should('exist', { timeout: constants.timeout.timeout });
+
+        if (rancherVersion.startsWith('v2.13')) {
+            // Switch to Installed tab
+            cy.get(this.extension_installed_tab).click();
+            // Ensure the Harvester extension card exists
+            cy.get(this.extension_installed_card_harvester_213).should('exist', { timeout: constants.timeout.timeout });
+        } else {
+            // Ensure the Harvester extension card exists
+            cy.get(this.extension_installed_card_harvester).should('exist', { timeout: constants.timeout.timeout });
+        }
+        
     }
 
     public importHarvester() {
