@@ -151,7 +151,7 @@ describe('Create image with invalid URL', () => {
 
         image.goToCreate();
         image.setNameNsDescription(IMAGE_NAME, namespace);
-        image.setBasics({ url: 'https://test.img' });
+        image.setBasics({ url: 'http://download.invalid.net/test.img' });
 
         cy.wrap(image.save()).then((realName) => {
             image.censorInColumn(IMAGE_NAME, 3, namespace, 4, 'Failed', 2, { timeout: constants.timeout.uploadTimeout });
