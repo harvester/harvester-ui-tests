@@ -20,7 +20,7 @@ describe('Setting Page', () => {
     it('change UI source type to Bundled, Check whether the configuration takes effect', () => {
         const address = `${Cypress.env('baseUrl')}/dashboard/js/**`;
         settings.clickMenu('ui-source', 'Edit Setting', 'ui-source', undefined, 'UI')
-        settings.checkUiSource('Bundled', address);
+        settings.checkUiSource('Bundled ', address);
 
         // revert change
         settings.navigateUISettingPage()
@@ -32,7 +32,7 @@ describe('Setting Page', () => {
     it('change UI source type to external, Check whether the configuration takes effect', () => {
         const address = 'https://releases.rancher.com/harvester-ui/dashboard/**';
         settings.clickMenu('ui-source', 'Edit Setting', 'ui-source', undefined, 'UI')
-        settings.checkUiSource('External', address);
+        settings.checkUiSource('External ', address);
 
         // revert change
         settings.navigateUISettingPage()
