@@ -112,8 +112,9 @@ describe("Check Create network data && Edit && clone", () => {
           expect(type, 'Check template data').to.equal('network');
           expect(data?.cloudInit, 'Check clouded network data').to.equal(editedData);
       
-          cloudConfig.deleteFromStore(`${namespace}/${name}`)
-          cloudConfig.deleteFromStore(`${namespace}/${cloneName}`)
+          // Clean up using UI delete method instead of deleteFromStore
+          cloudConfig.delete(namespace, name)
+          cloudConfig.delete(namespace, cloneName)
         })
       })
     })
