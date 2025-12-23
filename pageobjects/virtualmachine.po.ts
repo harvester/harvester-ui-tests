@@ -473,7 +473,7 @@ export class VmsPage extends CruResourcePo {
 
     this.clickAction(name, 'Delete').then((_) => {
       if (!removeRootDisk) {
-        this.rootDisk().click();
+        this.rootDisk().click({force: true});
       }
     })
 
@@ -521,7 +521,7 @@ export class VmsPage extends CruResourcePo {
 
     cy.wrap(volumeIndexArray).each((index: number) => {
       cy.wait(2000);
-      cy.get('.info-box.box').eq(index).contains('Detach Volume').click();
+      cy.get('.info-box').eq(index).contains('Detach Volume').click();
       cy.intercept('POST', `/v1/harvester/${this.realType}s/${namespace}/${vmName}*`).as('unplug');
       cy.get('.modal-container .card-container').contains('Detach').click();
       cy.wait('@unplug').then(res => {
