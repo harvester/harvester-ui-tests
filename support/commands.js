@@ -16,7 +16,7 @@ Cypress.Commands.add('login', (params = {}) => {
 
     const isDev = Cypress.env('NODE_ENV') === 'dev';
     const baseUrl = isDev ? Cypress.config('baseUrl') : `${Cypress.config('baseUrl')}/dashboard`;
-    cy.intercept('GET', '/v3-public/authProviders').as('authProviders');
+    cy.intercept('GET', '/v1-public/authproviders*').as('authProviders');
     cy.visit(`/auth/login`);
     cy.wait('@authProviders').then(res => {
       const { CSRF } = cookie.parse(document.cookie);
