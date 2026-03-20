@@ -50,6 +50,7 @@ export class rancherPage {
     private virtual_page_clusterName = ':nth-child(1) > .labeled-input > input';
     private virtual_page_createCluster = '.cru-resource-footer > div > .role-primary';
 
+    private local_apps_git_repository_card = '[data-testid="item-card-git-repo"]';
     private local_apps_repo_name = '[data-testid="name-ns-description-name"]';
     private local_apps_repo_url = '[data-testid="clusterrepo-git-repo-input"]';
     private local_apps_repo_branch = '[data-testid="clusterrepo-git-branch-input"]';
@@ -245,13 +246,16 @@ export class rancherPage {
         cy.visit(constants.rancher_nodeTamplatePage);
     }
 
+    public click_git_repository_card() {
+        cy.get(this.local_apps_git_repository_card).click();
+    }
+
     public add_local_cluster_repo(Repo_name: string, Repo_url: string, Repo_branch: string) {
         // Visit the local cluster repository page
         cy.visit(constants.rancher_apps_repositories + '/create');
         cy.get(this.local_apps_repo_name).type(Repo_name);
-        // Select the Git repository option
-        const target = new RadioButtonPo('.radio-group');
-        target.input(/Git repository/);
+        // Select the Git repository option (For Rancher v2.14.0 after)
+        this.click_git_repository_card();
         // Input Git Repo URL and Branch to create the repository
         cy.get(this.local_apps_repo_url).type(Repo_url);
         cy.get(this.local_apps_repo_branch).type(Repo_branch);
