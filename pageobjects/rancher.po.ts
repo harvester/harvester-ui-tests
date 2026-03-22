@@ -266,21 +266,25 @@ export class rancherPage {
     public install_harvester_ui_extension(version: string, rancherVersion: string) {
         // Visit the Extension -> Available page
         this.visit_available_extensions();
-        
+
+        // Parse minor version to determine which UI flow to use (v2.13+ uses dropdown menu)
+        const minorVersion = parseInt(rancherVersion.replace(/^v/, '').split('.')[1], 10);
+        const isNewUI = minorVersion >= 13;
+
         // Check Rancher version to determine which UI flow to use
-        if (rancherVersion.startsWith('v2.13')) {
+        if (isNewUI) {
             // Rancher v2.13+ uses dropdown menu for install
-            cy.log('Using Rancher v2.13+ UI flow');
+            cy.log(`Using Rancher v2.13+ UI flow (detected: ${rancherVersion})`);
             // Click the 3-dot menu button on the Harvester extension card
             cy.get(this.extension_card_menu_button).click();
             // Click the Install option from the dropdown menu
             cy.get(this.extension_dropdown_menu_install).contains('Install').click();
         } else {
             // Rancher < v2.13 uses direct install button
-            cy.log('Using Rancher < v2.13 UI flow');
+            cy.log(`Using Rancher < v2.13 UI flow (detected: ${rancherVersion})`);
             cy.get(this.extension_card_harvester_install).click();
         }
-        
+
         // Common steps for both versions
         // Search and select the version from the dropdown menu list
         const versionSelect = new LabeledSelectPo('[data-testid="install-ext-modal-select-version"]');
@@ -289,7 +293,7 @@ export class rancherPage {
         cy.get(this.install_harvester_extensionButton).click();
         cy.get(this.extension_reloadButton).click();
 
-        if (rancherVersion.startsWith('v2.13')) {
+        if (isNewUI) {
             // Switch to Installed tab
             cy.get(this.extension_installed_tab).click();
             // Ensure the Harvester extension card exists
@@ -298,7 +302,6 @@ export class rancherPage {
             // Ensure the Harvester extension card exists
             cy.get(this.extension_installed_card_harvester).should('exist', { timeout: constants.timeout.timeout });
         }
-        
     }
 
     public importHarvester() {
@@ -326,11 +329,14 @@ export class rancherPage {
             cy.get('#cluster-registration-url').click();
             cy.get('.icon.icon.icon-edit').click();
 
-            cy.get('input').clear().type(url);
+            cy.get('.labeled-input input[role="textbox"]').clear({ force: true }).type(url);
+            cy.contains('.checkbox-outer-container', 'Insecure Skip TLS Verify').find('.checkbox-custom').click();
 
         })
 
         cy.get('.cru-resource-footer > div > .btn').should('contain', 'Save').click();
+        // Handle the Tip confirmation dialog that appears after saving
+        cy.get('[data-testid="card-actions-slot"]').contains('button', 'OK').click();
     }
 
     // public checkState(value: ValueInterface, valid: boolean = true) {
