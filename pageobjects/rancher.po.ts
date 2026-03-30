@@ -330,8 +330,14 @@ export class rancherPage {
             cy.get('.icon.icon.icon-edit').click();
 
             cy.get('.labeled-input input[role="textbox"]').clear({ force: true }).type(url);
-            cy.contains('.checkbox-outer-container', 'Insecure Skip TLS Verify').find('.checkbox-custom').click();
+            cy.contains('.checkbox-outer-container', 'Insecure Skip TLS Verify')
+              .then(($container) => {
+                const $checkbox = $container.find('input[type="checkbox"]');
 
+                if (!$checkbox.is(':checked')) {
+                  cy.wrap($container).find('.checkbox-custom').click();
+                }
+              });
         })
 
         cy.get('.cru-resource-footer > div > .btn').should('contain', 'Save').click();
