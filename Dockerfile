@@ -1,17 +1,23 @@
 # 5.4.0 version overall with chart
-# version mc client , mc:0.20250813.083541-8.4
-# sha256:4d82b0fc31c9f59ae5b6c3b3ae0a37396d711e33468c5c89b25bf6c1da269f83
-FROM dp.apps.rancher.io/containers/mc@sha256:4d82b0fc31c9f59ae5b6c3b3ae0a37396d711e33468c5c89b25bf6c1da269f83 AS rancher-minio-client-binary-source
-#cypress/base:18.20.3 compatible with mc client
-FROM cypress/base@sha256:eb3d0807d128c9d6eec3a667db4c7fdc9e05b55a6018ad3e8c1641e05bb29932
+# mc version RELEASE.2025-08-13T08-35-41Z - official MinIO release binary (glibc 2.31 compatible)
+# source: https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2025-08-13T08-35-41Z
+ARG MC_VERSION=RELEASE.2025-08-13T08-35-41Z
+ARG MC_SUM=01f866e9c5f9b87c2b09116fa5d7c06695b106242d829a8bb32990c00312e891
 
+FROM cypress/base:16@sha256:f4d5f616e83ee6f37913ea18bc1bc4f483bd49b3d7353d04a555af034087b9ff
+
+ARG MC_VERSION
+ARG MC_SUM
 
 RUN apt-get update
-RUN apt-get install -y git
+RUN apt-get install -y git xauth
 
-COPY --from=rancher-minio-client-binary-source /usr/bin/mc /usr/local/bin/mc
-
-RUN chmod +x /usr/local/bin/mc
+# Download mc binary and verify against checksum defined in this Dockerfile (not fetched from internet).
+# Build will abort if checksum does not match.
+ADD "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.${MC_VERSION}" /usr/local/bin/mc
+RUN echo "${MC_SUM}  /usr/local/bin/mc" | sha256sum -c - && \
+    chown root:root /usr/local/bin/mc && \
+    chmod 0755 /usr/local/bin/mc
 
 RUN git clone https://github.com/harvester/harvester-ui-tests.git
 
