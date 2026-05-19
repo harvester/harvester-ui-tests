@@ -6,7 +6,8 @@ RUN apt-get install -y git
 ADD https://dl.min.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc
 RUN chmod +x /usr/local/bin/mc
 
-RUN git clone https://github.com/harvester/harvester-ui-tests.git
+# Please specify your desired harvester-ui-tests repository and branch here
+# RUN git clone https://github.com/harvester/harvester-ui-tests.git
 
 WORKDIR /harvester-ui-tests
 
