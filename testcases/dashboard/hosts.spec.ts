@@ -1,9 +1,31 @@
 import { HostsPage } from "@/pageobjects/hosts.po";
 import { EditYamlPage } from "@/pageobjects/editYaml.po";
 import { HCI } from '@/constants/types'
+import { Node } from '@/models/host';
 
 const hosts = new HostsPage();
 const editYaml = new EditYamlPage();
+
+let hostNodes: Node[] = [];
+
+before(() => {
+  // Authenticate via the UI (sets the R_SESS session cookie), then query the API
+  cy.login();
+  cy.request({
+    method: 'GET',
+    url: '/v1/harvester/nodes',
+    headers: { Accept: 'application/json' },
+  }).then((resp: Cypress.Response<any>) => {
+    const nodeList: any[] = resp.body?.data ?? resp.body?.items ?? [];
+    expect(nodeList.length, 'Cluster must have at least one node').to.be.greaterThan(0);
+    hostNodes = nodeList.map((node) => ({
+      name: (node.id ?? node.metadata?.name) as string,
+      customName: '',
+      disks: [{ name: '/dev/vda', devPath: '/dev/vda' }],
+      witnessNode: false,
+    }));
+  });
+});
 
 /**
  * 1. Login
@@ -16,7 +38,7 @@ const editYaml = new EditYamlPage();
 */
 describe('should insert custom name into YAML', () => {
   it('should insert custom name into YAML', () => {
-    const host = Cypress.env('host')[0];
+    const host = hostNodes[0];
     const hostName = host.name
     const customName = 'test-custom-name-yaml';
 
@@ -52,7 +74,7 @@ describe('Check edit host', () => {
   it('Check edit host', () => {
     cy.login();
 
-    const host = Cypress.env('host')[0];
+    const host = hostNodes[0];
     const hostName = host.name
     const customName = 'test-custom-name';
     const consoleUrl = 'https://test-console-url';
@@ -73,8 +95,8 @@ describe('Check Add disk', () => {
   it.skip('Check Add disk', () => {
     cy.login();
     
-    const host = Cypress.env('host')[0];
-    const disk = host.disks[0]
+    const host = hostNodes[0];
+    const disk = host.disks![0]
     
     cy.visit(`/harvester/c/local/${HCI.HOST}/${host.name}?mode=edit`)
 
