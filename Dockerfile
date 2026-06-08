@@ -19,9 +19,6 @@ RUN echo "${MC_SUM}  /usr/local/bin/mc" | sha256sum -c - && \
     chown root:root /usr/local/bin/mc && \
     chmod 0755 /usr/local/bin/mc
 
-# Please specify your desired harvester-ui-tests repository and branch here
-# RUN git clone https://github.com/harvester/harvester-ui-tests.git
-
 WORKDIR /harvester-ui-tests
 
 COPY . /harvester-ui-tests
