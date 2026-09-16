@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "github>harvester/dependency-automation:renovate"
+  ],
+  "enabledManagers": [
+    "dockerfile",
+    "github-actions",
+    "gomod",
+    "npm",
+    "pip_requirements"
+  ]
