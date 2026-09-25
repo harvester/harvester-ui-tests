@@ -36,3 +36,10 @@ export const HCI_URL = {
 export const NETWORK_ATTACHMENT = 'k8s.cni.cncf.io.networkattachmentdefinition';
 export const PVC = 'persistentvolumeclaim';
 export const STORAGE_CLASS = 'storage.k8s.io.storageclasse';
+
+export const CATALOG_ANNOTATIONS = {
+  INSTANCETYPE: 'catalog.harvesterhci.io/instancetype',
+  PREFERENCE:   'catalog.harvesterhci.io/preference',
+  IMAGE:        'catalog.harvesterhci.io/image',
+};
+

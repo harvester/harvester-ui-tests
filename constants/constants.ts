@@ -19,6 +19,7 @@ export class Constants {
     public settingsUrl = '/harvester/c/local/harvesterhci.io.setting';
     public uiSourceUrl = '/harvester/c/local/harvesterhci.io.setting/ui-source?mode=edit';
     public hostsPage = '/harvester/c/local/harvesterhci.io.host';
+    public catalogPage = '/harvester/c/local/catalog';
     public supportPage = '/harvester/c/local/support';
     public vmPage = '/harvester/c/local/kubevirt.io.virtualmachine';
     public settingUrl = '/harvester/c/local/harvesterhci.io.setting';
@@ -37,6 +38,7 @@ export class Constants {
 }
 
 export const PageUrl = {
+    catalog: '/harvester/c/local/catalog',
     setting: '/harvester/c/local/harvesterhci.io.setting',
     virtualMachine: '/harvester/c/local/kubevirt.io.virtualmachine',
     vmNetwork: '/harvester/c/local/harvesterhci.io.networkattachmentdefinition',
@@ -48,6 +50,7 @@ export const PageUrl = {
 export const MenuNav = {
     dashboard: ['Dashboard', 'harvester/c/local/harvesterhci.io.dashboard', 'Harvester Cluster: local'],
     Host: ['Hosts', 'harvester/c/local/harvesterhci.io.host', 'Hosts'],
+    catalog: ['Catalog', 'harvester/c/local/catalog', 'Catalog'],
     virtaulmachine: ['Virtual Machines', 'harvester/c/local/kubevirt.io.virtualmachine', 'Virtual Machines'],
     volume: ['Volumes', 'harvester/c/local/harvesterhci.io.volume', 'Volumes'],
     Images: ['Images', 'harvester/c/local/harvesterhci.io.virtualmachineimage', 'Images'],
