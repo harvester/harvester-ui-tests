@@ -15,21 +15,38 @@ export default class TablePo {
    * Vue tables render rows asynchronously after the list request resolves, so a single
    * DOM snapshot taken right afterwards can race a still-rendering table - including the
    * genuinely-empty case, which looks identical to "not rendered yet". Poll until the row
-   * count is stable across two checks (or the timeout elapses) before scanning the table.
+   * count repeats for `requiredStableChecks` consecutive reads before scanning the table.
+   * Throws on timeout instead of silently returning, since that would reintroduce the
+   * exact race this helper exists to prevent.
    */
-  waitForTableReady(rowSelector = '[data-testid$="-row"]', timeout: number = constants.timeout.timeout) {
+  waitForTableReady(
+    rowSelector = '[data-testid$="-row"]',
+    timeout: number = constants.timeout.timeout,
+    requiredStableChecks = 3,
+  ) {
     const deadline = Date.now() + timeout;
     let lastCount = -1;
+    let stableChecks = 0;
 
     const poll = () => {
       cy.get('body').then(($body) => {
         const count = $body.find(rowSelector).length;
 
-        if (count === lastCount || Date.now() > deadline) {
+        if (count === lastCount) {
+          stableChecks += 1;
+        } else {
+          lastCount = count;
+          stableChecks = 1;
+        }
+
+        if (stableChecks >= requiredStableChecks) {
           return;
         }
 
-        lastCount = count;
+        if (Date.now() > deadline) {
+          throw new Error(`waitForTableReady: row count never stabilized within ${timeout}ms (last seen: ${count})`);
+        }
+
         cy.wait(300);
         poll();
       });
