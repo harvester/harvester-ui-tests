@@ -33,7 +33,7 @@ describe('Create a new VM and add Enable USB tablet option', () => {
 
     vms.goToConfigDetail(VM_NAME);
 
-    cy.get('.tab#advanced').click()
+    cy.get('.tab#basics').click()
     vms.usbTablet().expectChecked()
 
     cy.intercept('GET', `/apis/kubevirt.io/v1/namespaces/*/virtualmachines/${VM_NAME}`).as('vmDetail');
@@ -122,7 +122,7 @@ describe("Verify Booting in EFI mode checkbox", () => {
 
     vms.goToConfigDetail(VM_NAME);
 
-    cy.get('.tab#advanced').click()
+    cy.get('.tab#basics').click()
     vms.efiEnabled().expectChecked()
 
     vms.deleteFromStore(`${NAMESPACE}/${VM_NAME}`)

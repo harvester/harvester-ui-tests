@@ -113,14 +113,16 @@ export default class TemplatePage extends CruResourcePo {
   }
 
   setAdvancedOption(option: {[index: string]: any}) {
+    // EFI is on the Basics tab
+    if ([true, false].includes(option.efiEnabled)) {
+      this.clickTab('Basics');
+      this.efiEnabled().check(option.efiEnabled)
+    }
+
     this.clickTab('advanced');
 
     if (option.runStrategy) {
       new LabeledSelectPo('.labeled-select', `:contains("Run Strategy")`).select({option: option.runStrategy});
-    }
-
-    if ([true, false].includes(option.efiEnabled)) {
-      this.efiEnabled().check(option.efiEnabled)
     }
   }
 

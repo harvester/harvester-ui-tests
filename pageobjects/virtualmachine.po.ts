@@ -121,14 +121,16 @@ export class VmsPage extends CruResourcePo {
   }
 
   setAdvancedOption(option: { [index: string]: any }) {
+    // EFI is on the Basics tab
+    if ([true, false].includes(option.efiEnabled)) {
+      this.clickTab('basics');
+      this.efiEnabled().check(option.efiEnabled)
+    }
+
     this.clickTab('advanced');
 
     if (option.runStrategy) {
       new LabeledSelectPo('.labeled-select', `:contains("Run Strategy")`).select({ option: option.runStrategy });
-    }
-
-    if ([true, false].includes(option.efiEnabled)) {
-      this.efiEnabled().check(option.efiEnabled)
     }
 
     if (option.userData) {
@@ -186,12 +188,12 @@ export class VmsPage extends CruResourcePo {
     this.description().input(value?.description)
     this.cpu().input(value?.cpu)
     this.memory().input(value?.memory)
+    this.usbTablet().check(value?.usbTablet)
+    this.efiEnabled().check(value?.efiEnabled)
     cy.get('.tab#Volume').click()
     this.image().select({ option: value?.image })
     this.networks(value?.networks)
     cy.get('.tab#advanced').click()
-    this.usbTablet().check(value?.usbTablet)
-    this.efiEnabled().check(value?.efiEnabled)
     this.userData().input(value?.userData)
     this.networkData().input(value?.networkData)
   }
