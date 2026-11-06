@@ -47,7 +47,8 @@ export default class CruResourcePo extends PagePo {
   }
 
   clickTab(contains: string) {
-    const path = `.resource-container .side-tabs .tab#${contains}`
+    // Newer @rancher/shell versions set the tab name as data-testid instead of id
+    const path = `.resource-container .side-tabs .tab#${contains}, .resource-container .side-tabs .tab[data-testid="${contains}"]`
     cy.get(path).click()
   }
 

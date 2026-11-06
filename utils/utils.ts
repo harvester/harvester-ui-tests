@@ -68,3 +68,38 @@ export const host = {
     return ret;
   }
 }
+
+/**
+ * Whether a Harvester version (e.g. `v1.10.0-rc1`) is at least `min` (e.g. `v1.10.0`).
+ * A pre-release counts as its release, a version that can't be parsed (e.g. `master-head`) counts as the latest.
+ */
+export const isVersionAtLeast = (version: string, min: string) => {
+  const parse = (v: string) => (v || '').replace(/^v/, '').split('-')[0].split('.').map((n) => parseInt(n, 10));
+  const current = parse(version);
+  const minimum = parse(min);
+
+  if (current.some((n) => isNaN(n))) {
+    return true;
+  }
+
+  for (let i = 0; i < Math.max(current.length, minimum.length); i++) {
+    const c = current[i] || 0;
+    const m = minimum[i] || 0;
+
+    if (c !== m) {
+      return c > m;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Yields the `server-version` setting of the Harvester cluster, e.g. `v1.10.0`
+ */
+export const getServerVersion = (): Cypress.Chainable<string> => {
+  return cy.request({
+    url: '/v1/harvester/harvesterhci.io.settings/server-version',
+    headers: { accept: 'application/json' },
+  }).then((res) => res.body?.value as string);
+}

@@ -23,6 +23,7 @@ interface ValueInterface {
   cpu?: string,
   memory?: string,
   image?: string,
+  diskSize?: string,
   networks?: Array<Network>,
   createRunning?: boolean,
   usbTablet?: boolean,
@@ -186,14 +187,20 @@ export class VmsPage extends CruResourcePo {
     this.description().input(value?.description)
     this.cpu().input(value?.cpu)
     this.memory().input(value?.memory)
-    cy.get('.tab#Volume').click()
-    this.image().select({ option: value?.image })
+    this.clickTab('Volume')
+    this.selectImage(value?.image)
+    this.diskSize().input(value?.diskSize)
     this.networks(value?.networks)
-    cy.get('.tab#advanced').click()
+    this.clickTab('advanced')
     this.usbTablet().check(value?.usbTablet)
     this.efiEnabled().check(value?.efiEnabled)
-    this.userData().input(value?.userData)
-    this.networkData().input(value?.networkData)
+    // userData() and networkData() query the editors right away, only use them when needed
+    if (value?.userData) {
+      this.userData().input(value.userData)
+    }
+    if (value?.networkData) {
+      this.networkData().input(value.networkData)
+    }
   }
 
   public save({
@@ -223,6 +230,25 @@ export class VmsPage extends CruResourcePo {
 
   public image() {
     return new LabeledSelectPo('.labeled-select', `:contains("Image")`)
+  }
+
+  /**
+   * Select an image on the Volumes tab by its exact name. Options are `<namespace>/<name>`, optionally followed by
+   * ` (<storage class> / <size>)`, so a plain text match could pick another image whose name starts with the same text.
+   */
+  public selectImage(name?: string) {
+    if (!name) {
+      return
+    }
+
+    this.image().self().first().click();
+    const escaped = Cypress._.escapeRegExp(name);
+
+    cy.contains('.vs__dropdown-menu .vs__dropdown-option', new RegExp(`^\\s*([^/\\s]+/)?${escaped}(\\s+\\(.*\\))?\\s*$`)).click();
+  }
+
+  public diskSize() {
+    return new LabeledInputPo('.info-box .labeled-input', `:contains("Size")`)
   }
 
   deleteVMFromStore(id: string) {
@@ -286,7 +312,7 @@ export class VmsPage extends CruResourcePo {
     if (networks.length === 0) {
       return
     } else {
-      cy.get('.tab#Network').click()
+      this.clickTab('Network')
 
       cy.get('[data-testid="input-hen-networkName"]').then(elms => {
         if (elms?.length < networks?.length) {
@@ -655,5 +681,193 @@ export class VmsPage extends CruResourcePo {
         })
         break;
     }
+  }
+
+  /**
+   * Open Edit Config of a VM with the latest VM from the API, e.g. after a live migration changed it
+   */
+  public goToEditConfig(name: string, namespace: string = 'default') {
+    cy.visit(`/harvester/c/local/${this.type}/${namespace}/${name}?mode=edit`);
+    cy.get(this.footerButtons, { timeout: constants.timeout.maxTimeout }).contains('Save').should('be.visible');
+  }
+
+  /**
+   * Delete a VM and its disks through the API, e.g. to clean up after a suite
+   */
+  public deleteVMByApi(name: string, namespace: string = 'default') {
+    cy.request({ url: this.vmApiUrl(name, namespace), headers: { accept: 'application/json' }, failOnStatusCode: false }).then((res) => {
+      if (res.status !== 200) {
+        cy.log(`VM ${namespace}/${name} not found: ${res.status}`);
+
+        return;
+      }
+
+      const volumes: any[] = res.body?.spec?.template?.spec?.volumes || [];
+      const disks = volumes.filter((V) => V.persistentVolumeClaim).map((V) => `removedDisks=${V.name}`).join('&');
+
+      // Steve rejects a cookie-authenticated DELETE without the CSRF header
+      cy.getCookie('CSRF').then((csrf) => {
+        cy.request({
+          method: 'DELETE',
+          url: `${this.vmApiUrl(name, namespace)}?${disks}&propagationPolicy=Foreground`,
+          headers: { 'x-api-csrf': csrf?.value },
+          failOnStatusCode: false,
+        }).then((del) => {
+          expect(del.status, `Delete VM ${namespace}/${name}: ${JSON.stringify(del.body)}`).to.be.oneOf([200, 204]);
+        });
+      });
+    });
+  }
+
+  /**
+   * Select a network for an existing NIC on the Networks tab of the VM form, matching the option exactly
+   * @param network - `<namespace>/<name>` of the VM network
+   * @param index - index of the NIC on the Networks tab
+   */
+  public selectNicNetwork(network: string, index: number = 0) {
+    this.clickTab('Network');
+    cy.get('[data-testid="input-hen-networkName"] .labeled-select').eq(index).click();
+    // Options are `<namespace>/<name>`, followed by `(Not Ready)` if the network is not ready
+    const escaped = Cypress._.escapeRegExp(network);
+
+    cy.contains('.vs__dropdown-menu .vs__dropdown-option', new RegExp(`^\\s*${escaped}(\\s+\\(.*\\))?\\s*$`)).click();
+    cy.get('[data-testid="input-hen-networkName"] .labeled-select').eq(index).find('.vs__selected').should('contain', network);
+  }
+
+  /**
+   * Info banner shown under a NIC when its network can be changed via live migration
+   */
+  public liveNetworkChangeBanner() {
+    return cy.get('[data-testid="banner-live-network-change"]');
+  }
+
+  /**
+   * "Restart Virtual Machine" dialog shown after saving a running VM
+   */
+  public restartDialog() {
+    return cy.get('.prompt-restart');
+  }
+
+  /**
+   * Save the edit form of a running VM.
+   * The restart dialog is an after-save hook: the VM spec is already saved when it is shown.
+   * @param expectRestartPrompt - whether the restart dialog is expected
+   * @param restart - when the dialog is shown, click "Save and Restart" instead of "Save"
+   */
+  public saveEdit({ expectRestartPrompt, restart = false }: { expectRestartPrompt: boolean, restart?: boolean }) {
+    cy.intercept('PUT', `/v1/harvester/${HCI.VM}s/*/*`).as('editVM');
+    cy.get(this.footerButtons).contains('Save').click();
+    cy.wait('@editVM').then(res => {
+      expect(res.response?.statusCode, 'Edit VM').to.equal(200);
+    });
+
+    if (expectRestartPrompt) {
+      this.restartDialog().should('be.visible')
+        .and('contain', 'Restart Virtual Machine')
+        .and('contain', 'Restart the virtual machine for configuration changes to take effect.');
+      this.restartDialog().find('button').contains(restart ? /^\s*Save and Restart\s*$/ : /^\s*Save\s*$/).click();
+      this.restartDialog().should('not.exist');
+    } else {
+      // The edit page goes back to the list only after the after-save hooks resolve, an open restart dialog blocks it
+      cy.location('pathname', { timeout: constants.timeout.maxTimeout }).should('match', new RegExp(`/${HCI.VM}$`));
+      this.restartDialog().should('not.exist');
+    }
+  }
+
+  /**
+   * Poll an API resource until `predicate` returns true and yield the resource
+   */
+  public waitForResource(url: string, predicate: (resource: any) => boolean, description: string, { retries = 60, interval = 5000 } = {}): Cypress.Chainable<any> {
+    const poll = (attempt: number): Cypress.Chainable<any> => {
+      return cy.request({ url, headers: { accept: 'application/json' }, failOnStatusCode: false, log: false }).then((res) => {
+        if (res.status === 200 && predicate(res.body)) {
+          cy.log(`${description}: done`);
+
+          return cy.wrap(res.body, { log: false });
+        }
+
+        if (attempt >= retries) {
+          throw new Error(`Timed out waiting for ${description}`);
+        }
+
+        cy.wait(interval, { log: false });
+
+        return poll(attempt + 1);
+      });
+    };
+
+    return poll(1);
+  }
+
+  public vmApiUrl(name: string, namespace: string = 'default') {
+    return `/v1/harvester/${HCI.VM}s/${namespace}/${name}`;
+  }
+
+  public vmiApiUrl(name: string, namespace: string = 'default') {
+    return `/v1/harvester/${HCI.VMI}s/${namespace}/${name}`;
+  }
+
+  public getVmi(name: string, namespace: string = 'default'): Cypress.Chainable<any> {
+    return cy.request({ url: this.vmiApiUrl(name, namespace), headers: { accept: 'application/json' } }).its('body');
+  }
+
+  /**
+   * Yield the multus network name (`<namespace>/<name>`) of a NIC in the VM spec
+   */
+  public getNicNetworkName(name: string, namespace: string = 'default', nic?: string): Cypress.Chainable<string> {
+    return cy.request({ url: this.vmApiUrl(name, namespace), headers: { accept: 'application/json' } }).then((res) => {
+      const networks: any[] = res.body?.spec?.template?.spec?.networks || [];
+      const network = networks.find((N) => N.multus && (!nic || N.name === nic));
+
+      return network?.multus?.networkName as string;
+    });
+  }
+
+  /**
+   * Wait until the VM is running, can be live-migrated and has no migration in progress
+   * @param previousVmiUid - also wait for a new VMI, e.g. after a restart
+   */
+  public waitForLiveMigratable(name: string, namespace: string = 'default', { previousVmiUid }: { previousVmiUid?: string } = {}) {
+    this.waitForResource(this.vmApiUrl(name, namespace), (vm) => {
+      return vm?.status?.printableStatus === 'Running' && !!vm?.actions?.migrate;
+    }, `VM ${namespace}/${name} running with the migrate action`);
+
+    return this.waitForResource(this.vmiApiUrl(name, namespace), (vmi) => {
+      const migration = vmi?.status?.migrationState;
+      const liveMigratable = (vmi?.status?.conditions || []).some((C: any) => C.type === 'LiveMigratable' && C.status === 'True');
+
+      return vmi?.status?.phase === 'Running' &&
+        liveMigratable &&
+        (!previousVmiUid || vmi?.metadata?.uid !== previousVmiUid) &&
+        (!migration || migration.completed || migration.failed);
+    }, `VMI ${namespace}/${name} running and live-migratable`);
+  }
+
+  /**
+   * Wait until a live migration moved the running VM to `network` (KubeVirt LiveUpdateNADRef) and check that the VM
+   * did not restart and does not require one
+   */
+  public waitForLiveNetworkChange(name: string, network: string, namespace: string = 'default', { vmi: previousVmi }: { vmi: any }) {
+    const vmiUid = previousVmi?.metadata?.uid;
+    const previousMigrationUid = previousVmi?.status?.migrationState?.migrationUid;
+
+    this.waitForResource(this.vmiApiUrl(name, namespace), (vmi) => {
+      const networks: any[] = vmi?.spec?.networks || [];
+      const migration = vmi?.status?.migrationState;
+
+      return networks.some((N) => N.multus?.networkName === network) &&
+        !!migration?.completed &&
+        !migration?.failed &&
+        migration?.migrationUid !== previousMigrationUid;
+    }, `VMI ${namespace}/${name} live-migrated to ${network}`).then((vmi) => {
+      expect(vmi.metadata.uid, 'VMI was not restarted').to.equal(vmiUid);
+      expect(vmi.status.phase).to.equal('Running');
+    });
+
+    return cy.request({ url: this.vmApiUrl(name, namespace), headers: { accept: 'application/json' } }).then((res) => {
+      const conditions: any[] = res.body?.status?.conditions || [];
+
+      expect(conditions.some((C) => C.type === 'RestartRequired' && C.status === 'True'), 'VM requires no restart').to.equal(false);
+    });
   }
 }
