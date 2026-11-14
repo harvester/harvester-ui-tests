@@ -305,6 +305,8 @@ export class rancherPage {
         if (isNewUI) {
             // Rancher v2.13+ uses dropdown menu for install
             cy.log(`Using Rancher v2.13+ UI flow (detected: ${rancherVersion})`);
+            cy.wait(15000); // Wait for 15 second to ensure the repository is ready
+            cy.reload();
             // Click the 3-dot menu button on the Harvester extension card
             cy.get(this.extension_card_menu_button).click();
             // Click the Install option from the dropdown menu
@@ -321,7 +323,21 @@ export class rancherPage {
         versionSelect.select({ option: version, selector: '.vs__dropdown-menu' });
         // Click the Install button to install the Harvester extension
         cy.get(this.install_harvester_extensionButton).click();
-        cy.get(this.extension_reloadButton).click();
+        // Check every 5 seconds (up to 180 seconds) for the reload banner, otherwise reload the page directly
+        const checkReloadButton = (remainingChecks: number) => {
+            cy.get('body').then($body => {
+                if ($body.find(this.extension_reloadButton).length > 0) {
+                    cy.get(this.extension_reloadButton).click();
+                } else if (remainingChecks > 0) {
+                    cy.wait(5000);
+                    checkReloadButton(remainingChecks - 1);
+                } else {
+                    cy.log('Reload banner not found after 180 seconds, reloading the page');
+                    cy.reload();
+                }
+            });
+        };
+        checkReloadButton(36);
 
         if (isNewUI) {
             // Switch to Installed tab
@@ -359,7 +375,7 @@ export class rancherPage {
             cy.get('#cluster-registration-url').click();
             cy.get('.icon.icon.icon-edit').click();
 
-            cy.get('.labeled-input input[role="textbox"]').clear({ force: true }).type(url);
+            cy.get('.labeled-input input[type="text"]').clear({ force: true }).type(url);
             cy.contains('.checkbox-outer-container', 'Insecure Skip TLS Verify')
               .then(($container) => {
                 const $checkbox = $container.find('input[type="checkbox"]');
