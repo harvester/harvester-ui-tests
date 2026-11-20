@@ -1,5 +1,5 @@
 import { Navbar } from '@/utils/components/page.po';
-import { MenuNav } from "@/constants/constants";
+import { MenuNav, PRODUCT_LOGO_SRC } from "@/constants/constants";
 
 const navBar = new Navbar();
 
@@ -20,7 +20,7 @@ describe("UI url", () => {
   it("Verify the Harvester icon on the left top corner", () => {
     cy.get('.dashboard-content header .menu-spacer').find('img').then(($el) => {
       const src = $el.attr('src');
-      expect(src).to.match(/harvester.*\.svg/);
+      expect(src).to.match(PRODUCT_LOGO_SRC);
     })
   })
 })

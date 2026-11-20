@@ -1,5 +1,5 @@
 import type { CypressChainable } from '@/utils/po.types';
-import { Constants } from '../constants/constants';
+import { Constants, productText } from '../constants/constants';
 import SettingsPagePo from "@/pageobjects/settings.po";
 import LabeledInputPo from '@/utils/components/labeled-input.po';
 import LabeledSelectPo from '@/utils/components/labeled-select.po';
@@ -457,7 +457,7 @@ export class rancherPage {
 
         cy.wait(1000).get(this.cloudCredential_page_createButton).click();
 
-        cy.get(this.cloudCredential_page_harvester).should('contain', 'Harvester').click();
+        cy.get(this.cloudCredential_page_harvester).should(($el) => expect($el.text()).to.match(productText('{product}'))).click();
 
         cy.get(this.cloudCredential_page_clusterName).type(cloud_credential);
 
@@ -489,7 +489,7 @@ export class rancherPage {
         // toggle slide
         cy.wait(1000).get(this.clusterManagement_rke_selector).click().then((el) => {
 
-            cy.get(this.clusterCreation_page_harvester).should('contain', 'Harvester').click();
+            cy.get(this.clusterCreation_page_harvester).should(($el) => expect($el.text()).to.match(productText('{product}'))).click();
 
             // Input CPUs
             cy.get(this.rke2Creation_page_cpus).clear().type(rke2_cluster_attributes.cpus);
@@ -652,7 +652,7 @@ export class rancherPage {
         cy.get(this.confirm_delete_button).click();
         cy.log('Click the doulbe confirm delete button');
 
-        cy.contains('There are no Harvester Clusters');
+        cy.contains(productText('There are no {product} Clusters'));
 
     }
 
