@@ -1,7 +1,7 @@
 import cookie from 'cookie';
 import addContext from "mochawesome/addContext";
 
-import { Constants } from '../constants/constants'
+import { Constants, PRODUCT_LOGO_SELECTOR, PRODUCT_LOGO_SRC } from '../constants/constants'
 
 const path = require('path')
 
@@ -37,7 +37,11 @@ Cypress.Commands.add('login', (params = {}) => {
 
     // Navigate to the target url after session is established/restored
     cy.visit(url);
-    cy.get(".dashboard-content .product-name", { timeout: constants.timeout.maxTimeout }).contains("Harvester");
+    // The dashboard is rendered when the branded logo (Harvester or SUSE Virtualization) is displayed and loaded
+    cy.get(PRODUCT_LOGO_SELECTOR, { timeout: constants.timeout.maxTimeout }).first({ timeout: constants.timeout.maxTimeout }).should(($img) => {
+      expect($img.attr('src'), 'product logo src').to.match(PRODUCT_LOGO_SRC);
+      expect($img[0].naturalWidth, 'product logo is loaded').to.be.greaterThan(0);
+    }).and('be.visible');
 });
 
 Cypress.Commands.add('stopOnFailed', () => {

@@ -1,5 +1,5 @@
 import type { CypressChainable } from '@/utils/po.types'
-import { Constants } from '@/constants/constants'
+import { Constants, productText } from '@/constants/constants'
 import { validateZip, deleteDownloadsFolder } from '@/utils/utils'
 import Dashboard from "@/pageobjects/dashboard.po";
 
@@ -40,7 +40,7 @@ export class SupportPage {
                 cy.login();
             }
             Dashboard.nav.SupportLink.click()
-            cy.get("main h1").should("contain", "Harvester Support")
+            cy.get("main h1").invoke("text").should("match", productText("{product} Support"))
             cy.url().should("contain", constants.supportPage)
         })
     }
