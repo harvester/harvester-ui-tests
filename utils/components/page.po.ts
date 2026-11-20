@@ -1,6 +1,16 @@
 import type { CypressChainable } from '@/utils/po.types'
 import ComponentPo from './component.po';
 
+const assertHeader = (actual: string, expected: string | RegExp, exact: boolean = true) => {
+  if (expected instanceof RegExp) {
+    expect(actual).to.match(expected);
+  } else if (exact) {
+    expect(actual).eq(expected);
+  } else {
+    expect(actual).include(expected);
+  }
+};
+
 export class Navbar {
   public static get DashboardBtn(): CypressChainable {
     return cy.get("nav a").contains("Dashboard")
@@ -74,7 +84,7 @@ export class Navbar {
    * @param parentNavs Menu Path
    * @param exact Exact match of text
    */
-  clickMenuNav(navName: string, matchUrl: string, listPageHeaderText: string, parentNavs: Array<string> = [], exact: boolean = true) {
+  clickMenuNav(navName: string, matchUrl: string, listPageHeaderText: string | RegExp, parentNavs: Array<string> = [], exact: boolean = true) {
     const groupHeader = (name: string) => `.accordion-item > .header[aria-label="${name}"]`;
 
     if (parentNavs.length === 0) {
@@ -86,7 +96,7 @@ export class Navbar {
 
       cy.wait(2000);
       cy.get('a').parentsUntil('body').find('main .outlet header h1').should('be.visible').invoke('text').then((_text) => {
-        expect(_text.trim()).eq(listPageHeaderText)
+        assertHeader(_text.trim(), listPageHeaderText)
         cy.log(`${navName} Nav go to the correct page and display it`)
       });
     } else {
@@ -125,9 +135,9 @@ export class Navbar {
       cy.wait(2000); // when clicking a secondary menu item, the menu may jump to the first item
       cy.get('main .outlet header h1').should('be.visible').invoke('text').then((_text) => {
         if (exact) {
-          expect(_text.trim()).eq(listPageHeaderText);
+          assertHeader(_text.trim(), listPageHeaderText);
         } else {
-          expect(_text.trim()).include(listPageHeaderText);
+          assertHeader(_text.trim(), listPageHeaderText, false);
         }
         cy.log(`${navName} Nav go to the correct page and display it`);
       });

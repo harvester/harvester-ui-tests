@@ -45,8 +45,15 @@ export const PageUrl = {
     volumeSnapshot: '/harvester/c/local/harvesterhci.io.volumesnapshot'
 }
 
+export const PRODUCT_NAME = 'Harvester|SUSE Virtualization';
+export const PRODUCT_LOGO_SELECTOR = '.dashboard-content header .menu-spacer img';
+export const PRODUCT_LOGO_SRC = /(harvester|suse-virtualization).*\.svg/i;
+
+export const productText = (pattern: string, flags?: string) =>
+    new RegExp(pattern.replace('{product}', `(?:${PRODUCT_NAME})`), flags);
+
 export const MenuNav = {
-    dashboard: ['Dashboard', 'harvester/c/local/harvesterhci.io.dashboard', 'Harvester Cluster: local'],
+    dashboard: ['Dashboard', 'harvester/c/local/harvesterhci.io.dashboard', productText('^{product} Cluster: local$')],
     Host: ['Hosts', 'harvester/c/local/harvesterhci.io.host', 'Hosts'],
     virtaulmachine: ['Virtual Machines', 'harvester/c/local/kubevirt.io.virtualmachine', 'Virtual Machines'],
     volume: ['Volumes', 'harvester/c/local/harvesterhci.io.volume', 'Volumes'],
