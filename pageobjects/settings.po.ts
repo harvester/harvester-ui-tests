@@ -56,7 +56,7 @@ export default class SettingsPagePo extends CruResource {
     }
 
     changeLogLevel(id: string, value: string) {
-        new LabeledSelectPo('.labeled-select', `:contains("Value")`).select({option: value})
+        new LabeledSelectPo('.labeled-select', `:contains("Value")`).select({option: value, selector: '.vs__dropdown-menu'})
 
         this.update(id);
     }
