@@ -64,7 +64,8 @@ describe('Create an image with valid image URL', () => {
     const largeImageEnv = Cypress.env('largeImage');
     const IMAGE_NAME = generateName('auto-image-valid-url-test');
     const IMAGE_URL = imageEnv.url;
-    const LARGE_IMAGE_NAME = largeImageEnv.name;
+    // Unique name per run, so it never collides with an existing image (e.g. the one from the auto setup test)
+    const LARGE_IMAGE_NAME = generateName('auto-image-large-url-test');
     const LARGE_IMAGE_URL = largeImageEnv.url;
 
     it('Create an image with valid image URL', () => {
@@ -128,6 +129,9 @@ describe('Create an image with valid image URL', () => {
         cy.wrap(image.save()).then((realName) => {
             // check IMAGE state
             image.checkState_without_size({ name: LARGE_IMAGE_NAME });
+
+            // delete IMAGE, the name is unique so it would otherwise stay on the cluster
+            image.delete(namespace, `${realName}`, LARGE_IMAGE_NAME);
         })
     });
 
