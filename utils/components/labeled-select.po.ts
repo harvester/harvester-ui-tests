@@ -14,11 +14,9 @@ export default class LabeledSelectPo extends ComponentPo {
         this.self().click()
       }
       
-      if (args.selector) {
-        cy.get(args.selector).contains(args.option).click()
-      } else {
-        cy.contains(args.option).click()
-      }
+      // Always scope the option lookup to the open dropdown list. A page-wide cy.contains() can match
+      // other elements first (e.g. the namespace filter chip in the header or a description text)
+      cy.get(args.selector || '.vs__dropdown-menu').contains(args.option).click()
     }
 
     return
