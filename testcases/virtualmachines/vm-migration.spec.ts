@@ -15,6 +15,15 @@ const namespaces = new NamespacePage();
 const imagePO = new ImagePage();
 const vmBackups = new VMBackup();
 
+// openSUSE Leap 16.1+ images no longer ship the `opensuse` user, so declare it explicitly.
+// Harmless on older Leap images, where `opensuse` already exists.
+const MIGRATION_USERDATA = `#cloud-config
+password: password
+chpasswd: { expire: False }
+ssh_pwauth: True
+users: [default, {name: opensuse, lock_passwd: false, plain_text_passwd: password, shell: /bin/bash, sudo: ALL=(ALL) NOPASSWD:ALL}]
+`
+
 const vmNetworkName = `vlan${(Cypress.env('networks') || {})?.vlans?.[0]}`;
 
 let clusterNodeCount = 0;
@@ -69,11 +78,7 @@ describe('VM Live Migration', () => {
     const VM_NAME = generateName('test-vm-migrate');
     const NAMESPACE = 'default'
     const largeImageEnv = Cypress.env('largeImage');
-    const USERDATA = `#cloud-config
-password: password
-chpasswd: { expire: False }
-sshpwauth: True
-`
+    const USERDATA = MIGRATION_USERDATA
 
     const value = {
       name: VM_NAME,
@@ -196,11 +201,7 @@ sshpwauth: True
     const NAMESPACE = 'default'
     const largeImageEnv = Cypress.env('largeImage');
     const BACKUP_NAME = `backup-${VM_NAME}`;
-    const USERDATA = `#cloud-config
-password: password
-chpasswd: { expire: False }
-sshpwauth: True
-`
+    const USERDATA = MIGRATION_USERDATA
 
     const value = {
       name: VM_NAME,
@@ -340,11 +341,7 @@ sshpwauth: True
     const NAMESPACE = 'default'
     const VOLUME_NAME = generateName('migration-vol');
     const largeImageEnv = Cypress.env('largeImage');
-    const USERDATA = `#cloud-config
-password: password
-chpasswd: { expire: False }
-sshpwauth: True
-`
+    const USERDATA = MIGRATION_USERDATA
 
     // Create a new volume
     volumePO.goToCreate();
