@@ -291,7 +291,21 @@ export class rancherPage {
         versionSelect.select({ option: version, selector: '.vs__dropdown-menu' });
         // Click the Install button to install the Harvester extension
         cy.get(this.install_harvester_extensionButton).click();
-        cy.get(this.extension_reloadButton).click();
+        // Check every 5 seconds (up to 180 seconds) for the reload banner, otherwise reload the page directly
+        const checkReloadButton = (remainingChecks: number) => {
+            cy.get('body').then(($body) => {
+                if ($body.find(this.extension_reloadButton).length > 0) {
+                    cy.get(this.extension_reloadButton).click();
+                } else if (remainingChecks > 0) {
+                    cy.wait(5000);
+                    checkReloadButton(remainingChecks - 1);
+                } else {
+                    cy.log('Reload banner not found after 180 seconds, reloading the page');
+                    cy.reload();
+                }
+            });
+        };
+        checkReloadButton(36);
 
         if (isNewUI) {
             // Switch to Installed tab
@@ -312,9 +326,9 @@ export class rancherPage {
         cy.get(this.virtual_page_importButton).should('contain', 'Import Existing').click();
         cy.get(this.virtual_page_clusterName).type('harvester')
         cy.get(this.virtual_page_createCluster).should('contain', 'Create').click();
-        cy.visit(constants.virtualManagePage + '/create#memberRoles');
-
-        cy.contains(constants.rancherUrl, { timeout: constants.timeout.timeout });
+        // Newer Rancher UI lands on the cluster detail page showing the registration URL after Create
+        // Rancher may be served over https while rancherUrl is configured as http, so match the import path only
+        cy.contains('/v3/import/', { timeout: constants.timeout.timeout });
 
         return cy.get('.copy', { timeout: constants.timeout.timeout });
     }
